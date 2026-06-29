@@ -17,10 +17,10 @@ shield_src = f'data:image/png;base64,{base64.b64encode(_buf.getvalue()).decode()
 _SVG = {
  "hr":'<path d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="9" cy="7" r="3"/><path d="M22 19v-1a4 4 0 0 0-3-3.87"/><path d="M16 4.13a4 4 0 0 1 0 7.75"/>',
  "budget":'<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>',
- "hours":'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ "hours":'<path d="M5 2h9l5 5v15H5z"/><path d="M14 2v5h5"/><path d="M8 11h6M8 14h6"/><circle cx="11" cy="18" r="2"/>',
  "transport":'<rect x="4" y="3" width="16" height="14" rx="2"/><path d="M4 11h16"/><path d="M7 17v2M17 17v2"/><circle cx="8" cy="14" r=".6" fill="currentColor"/><circle cx="16" cy="14" r=".6" fill="currentColor"/>',
  "journal":'<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M4 17.5h13"/><path d="M9 7h6"/>',
- "fees":'<path d="M3 10l9-6 9 6"/><path d="M5 10v8M10 10v8M14 10v8M19 10v8"/><path d="M2.5 21h19"/>',
+ "fees":'<path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/>',
  "welfare":'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/>',
  "salary":'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/>',
 }
@@ -28,37 +28,36 @@ def _icon(k):
     return f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">{_SVG[k]}</svg>'
 
 PRODUCTS = [
-    {"id":"hr",        "name":"ניהול כח אדם",  "rgb":"198,160,75",  "live":True,
-     "domain":"hr.tpshk.org.il",
-     "desc":"בקרה על תקן כוח האדם החינוכי אל מול האיוש בפועל — לכל מוסד, תפקיד וחודש."},
-    {"id":"budget",    "name":"תקציב",        "rgb":"62,114,160",  "live":False,
-     "desc":"תקציב לאגף החינוך על בסיס אפס, המתעדכן אוטומטית בהתאם לנתוני משרד החינוך."},
-    {"id":"hours",     "name":"בקרת שעות",     "rgb":"124,104,168", "live":False,
-     "desc":"בקרה על מקסום השעות ברמת מסלול, על בסיס נתונים הנמשכים ממערכות משרד החינוך."},
-    {"id":"transport", "name":"הסעות",        "rgb":"70,154,128",  "live":False,
-     "desc":"בקרה על מקסום ההכנסות ושלמות הדיווחים בהסעות חינם."},
-    {"id":"journal",   "name":"פקודת יומן",    "rgb":"176,138,70",  "live":False,
-     "desc":"קליטה אוטומטית של התקציבים ממשרדי הממשלה ורישומם בספרי התקציב."},
-    {"id":"fees",      "name":"אגרות חוץ",     "rgb":"176,98,84",   "live":False,
-     "desc":"מודולים רבים למקסום הכנסה ובקרה — גני ילדים, מלווים בהסעות, שיבוצי סייעות ודרגות ותק."},
-    {"id":"welfare",   "name":"כח אדם רווחה",  "rgb":"72,150,156",  "live":False,
-     "desc":"בדיקת שלמות כח האדם ברווחה, לרבות בדיקת כל הפעולות מול הדיווחים המאושרים למשרד."},
-    {"id":"salary",    "name":"שכר תיכונים",   "rgb":"150,116,84",  "live":False,
-     "desc":"שליפת תלושי השכר אוטומטית והצלבתם מול אישורי משרד החינוך."},
+    {"id":"hr",        "name":"שליטה מלאה על כח אדם בחינוך וברווחה ברשות", "rgb":"198,160,75",  "live":True,
+     "desc":'מערכת מתקדמת לניהול ובקרת מערך כוח האדם להבטחת התנהלות תקינה, שקופה ויעילה. המודול מספק תמונת מצב מדויקת בזמן אמת, תוך השוואה חכמה ורציפה בין התקן המאושר לבין האיוש בפועל — הן ברמת המוסד, התפקיד וחתך הזמן המבוקש.'},
+    {"id":"budget",    "name":"בניית תקציב על בסיס אפס",                   "rgb":"62,114,160",  "live":False,
+     "desc":'בניית תקציב וניהול פיננסי חכם לאגפי חינוך על בסיס "תקציב אפס". המערכת מסתנכרנת באופן אוטומטי ומלא עם נתוני משרד החינוך העדכניים, ומעניקה למקבלי ההחלטות שליטה מלאה, שקיפות וביטחון בניהול משאבי האגף.'},
+    {"id":"hours",     "name":"בקרה וניהול שעות הוראה בתיכונים",          "rgb":"124,104,168", "live":False,
+     "desc":'כלי אנליטי מתקדם לניהול ומקסום שעות התקן במוסד החינוכי. המערכת מאפשרת בקרה הדוקה וקבלת החלטות מבוססות-נתונים לייעול מקסימלי של שעות התקן במוסד.'},
+    {"id":"transport", "name":"בקרה ואופטימיזציה של תקציבי הסעות",          "rgb":"70,154,128",  "live":False,
+     "desc":'בקרה ומקסום הכנסות מערך ההיסעים ברשות, תוך הבטחת שלמות הדיווח.'},
+    {"id":"journal",   "name":"פקודת יומן אוטומטית",                       "rgb":"176,138,70",  "live":False,
+     "desc":'המערכת מבצעת קליטה אוטומטית ומהירה של תקציבי משרדי הממשלה, ודואגת לרישום מדויק וישיר שלהם בספרי התקציב של הרשות — תוך ייעול ומיכון תהליכים לחיסכון בזמן ומניעת טעויות.'},
+    {"id":"fees",      "name":"אגרות חוץ - מענה מקיף",                     "rgb":"176,98,84",   "live":False,
+     "desc":'מערך כלים רחב המסייע במיצוי זכויות ומשאבים לרשות הקולטת בשלל תחומים מורכבים: גני ילדים, ליווי בהסעות, שיבוץ סייעות ודירוגי ותק.'},
+    {"id":"welfare",   "name":"ביקורת שכר כוח אדם - משרד הרווחה",          "rgb":"72,150,156",  "live":False,
+     "desc":'מערכת ייעודית לבקרה מקיפה על כוח האדם באגף הרווחה, לרבות בדיקת כלל הפעולות מול הדיווחים המאושרים למשרד.'},
+    {"id":"salary",    "name":"בקרה מדוקדקת על שכר עובדי ההוראה",          "rgb":"150,116,84",  "live":False,
+     "desc":'אוטומציה חכמה לניהול ובקרת נתוני שכר בחינוך העל-יסודי. המערכת מבצעת סנכרון והצלבה מדויקת של שכר עובדי הוראה אל מול נתוני משרד החינוך.'},
 ]
 for _p in PRODUCTS:
     _p["icon"] = _icon(_p["id"])
 
-# מיקומי השמש [x%, y%] — אסימטרי, מרחקים משתנים מהמרכז, ללא התנגשויות
+# מיקומי השמש [x%, y%] — פיזור אחיד סביב השמש עם מרווחים שווים; זוויות מעט לא-סימטריות
 NODE_POS = [
-    [66, 24],  # ניהול כח אדם — קרוב, ימין-עליון
-    [26, 17],  # תקציב — שמאל-עליון
-    [90, 41],  # בקרת שעות — רחוק, ימין
-    [78, 74],  # הסעות — ימין-תחתון
-    [46, 87],  # פקודת יומן — תחתית, נוטה שמאלה
-    [21, 75],  # אגרות חוץ — שמאל-תחתון
-    [ 9, 47],  # כח אדם רווחה — רחוק, שמאל
-    [52, 10],  # שכר תיכונים — רחוק, מעלה
+    [75, 32],  # ניהול כח אדם (ארוך) — ימין, עליון-אמצע
+    [35, 22],  # בניית תקציב         — שמאל, עליון
+    [58, 19],  # ניהול תיכונים       — מרכז-ימין, עליון
+    [80, 56],  # הסעות (ארוך)        — ימין, אמצע
+    [67, 76],  # פקודת יומן          — ימין, תחתון
+    [42, 81],  # אגרות חוץ           — מרכז-שמאל, תחתון
+    [25, 68],  # בקרת כח אדם         — שמאל, תחתון
+    [21, 42],  # שכר תיכונים (ארוך)  — שמאל, אמצע
 ]
 
 # בניית נודות השמש (אייקון + שם בלבד)
@@ -73,21 +72,15 @@ for i, p in enumerate(PRODUCTS):
     </div>
 '''
 
-# בניית רשת הפירוט (כל התוכנות גלויות)
+# בניית רשת הפירוט (כל התוכנות גלויות) — בלי תגיות/קישורים בשלב זה
 grid_html = ""
 for p in PRODUCTS:
-    badge = '<span class="prod-badge prod-badge-live">● פעיל</span>' if p["live"] else '<span class="prod-badge prod-badge-soon">בקרוב</span>'
     live_cls = " live" if p["live"] else ""
-    domain = ""
-    if p.get("domain"):
-        domain = f'''        <a class="prod-link" href="https://{p['domain']}" target="_blank">{p['domain']} ↗</a>
-'''
     grid_html += f'''      <div class="prod-card{live_cls}" id="card-{p['id']}" style="--clr:{p['rgb']}">
         <div class="prod-icon" style="background:rgba({p['rgb']},.15);color:rgb({p['rgb']})">{p['icon']}</div>
         <div class="prod-name">{p['name']}</div>
         <div class="prod-desc">{p['desc']}</div>
-        {badge}
-{domain}      </div>
+      </div>
 '''
 
 # POS ל-JS
@@ -98,7 +91,10 @@ page = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ד.ר שחקים | Technology Platform</title>
+<title>ד.ר שחקים בע"מ | Technology Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -136,8 +132,8 @@ nav{
 .nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;cursor:pointer}
 .nav-brand img{height:34px;width:auto}
 .nav-brand-name{font-size:.92rem;font-weight:700;color:var(--navy)}
-.nav-brand-sub{font-size:.56rem;font-weight:700;color:var(--gold);letter-spacing:.12em;text-transform:uppercase}
-.nav-links{display:flex;gap:28px;list-style:none}
+.nav-brand-sub{font-size:.58rem;font-weight:700;color:var(--gold);letter-spacing:.08em}
+.nav-links{display:flex;gap:28px;list-style:none;position:absolute;left:50%;transform:translateX(-50%)}
 .nav-links a{text-decoration:none;color:var(--muted);font-size:.87rem;transition:color .2s}
 .nav-links a:hover{color:var(--navy)}
 .nav-cta{background:var(--navy);color:#fff;padding:9px 22px;border-radius:8px;font-size:.84rem;font-weight:600;text-decoration:none;transition:all .2s}
@@ -266,8 +262,8 @@ nav{
 .pnode-card{
   background:rgba(255,255,255,.07);
   border:1px solid rgba(255,255,255,.14);
-  border-radius:14px;padding:12px 12px 11px;
-  width:clamp(106px,8.5vw,134px);
+  border-radius:14px;padding:12px 13px 11px;
+  width:clamp(140px,12vw,178px);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
   text-align:center;cursor:pointer;
   backdrop-filter:blur(10px);
@@ -281,7 +277,7 @@ nav{
 }
 .pnode.soon .pnode-card{opacity:.82}
 .pnode.soon .pnode-card:hover{opacity:1}
-.pnode-name{font-size:clamp(.92rem,1.2vw,1.12rem);font-weight:800;color:#fff;line-height:1.25}
+.pnode-name{font-family:'Heebo',sans-serif;font-size:clamp(.78rem,.95vw,.92rem);font-weight:700;color:#fff;line-height:1.3}
 
 /* pulsing ring on live card */
 .pnode.live::before{
@@ -345,8 +341,8 @@ nav{
   display:flex;align-items:center;justify-content:center;margin-bottom:18px;
 }
 .prod-icon svg{width:34px;height:34px}
-.prod-name{font-size:1.18rem;font-weight:800;color:var(--navy);margin-bottom:12px}
-.prod-desc{font-size:.86rem;color:var(--muted);line-height:1.65;flex:1;margin-bottom:18px}
+.prod-name{font-family:'Heebo',sans-serif;font-size:1.18rem;font-weight:800;color:var(--navy);line-height:1.3;margin-bottom:11px}
+.prod-desc{font-family:'Heebo',sans-serif;font-size:.86rem;font-weight:400;color:var(--muted);line-height:1.65;text-align:center}
 .prod-badge{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.05em;padding:5px 14px;border-radius:100px}
 .prod-badge-live{background:rgba(34,200,100,.13);color:#27ae60}
 .prod-badge-soon{background:rgba(41,67,104,.07);color:var(--muted)}
@@ -490,7 +486,7 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
   <a href="#" class="nav-brand" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
     <img src="__LOGO__" alt="לוגו">
     <div>
-      <div class="nav-brand-name">ד.ר שחקים</div>
+      <div class="nav-brand-name">ד.ר שחקים בע"מ</div>
       <div class="nav-brand-sub">Technology Platform</div>
     </div>
   </a>
@@ -499,8 +495,8 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
     <li><a href="#contact">צרו קשר</a></li>
   </ul>
   <div style="display:flex;gap:10px;align-items:center">
-    <a href="https://tpshk.org.il" class="nav-login" target="_blank">🔐 מעבר לאתר החברה</a>
-    <a href="#contact" class="nav-cta">הדגמה חינמית</a>
+    <a href="https://tpshk.org.il" class="nav-login" target="_blank">🌐 מעבר לאתר החברה</a>
+    <a href="#contact" class="nav-cta">לקביעת הדגמה חינמית</a>
   </div>
 </nav>
 
@@ -540,7 +536,7 @@ __NODES__
 
 <!-- HERO BODY — sub text + chips + CTAs -->
 <div class="hero-body">
-  <p class="hero-sub">ניהול תקציבים, כוח אדם ומשאבים ברשויות מקומיות — בפלטפורמת ענן אחת חכמה ומשולבת.</p>
+  <p class="hero-sub">ניהול תקציבים, כוח אדם ומשאבים ברשויות מקומיות לרבות אופטימיזציה — בפלטפורמת ענן אחת חכמה ומשולבת.</p>
   <div class="tech-row">
     <span class="tech-chip">Cloud SaaS</span>
     <span class="tech-chip">GovTech</span>
@@ -557,7 +553,7 @@ __NODES__
 <section class="products" id="products">
   <div class="products-head">
     <div class="sec-ey">הפלטפורמה</div>
-    <h2 class="products-title">התוכנות שלנו</h2>
+    <h2 class="products-title">הפלטפורמה הטכנולוגית שלנו</h2>
     <div class="pt-rule"><span></span></div>
     <p class="products-sub">מערכת אחת, פתרונות רבים</p>
   </div>
@@ -570,7 +566,7 @@ __GRID__
 <section class="about" id="about">
   <div class="sec-ey">מי אנחנו</div>
   <h2>מומחיות כלכלית, חדשנות טכנולוגית</h2>
-  <p class="about-sub">ד.ר שחקים היא חברת יעוץ כלכלי לרשויות מקומיות, המתרחבת לעולם הטכנולוגיה עם פלטפורמות SaaS ייעודיות לשלטון המקומי.</p>
+  <p class="about-sub">ד.ר שחקים בע"מ היא חברת יעוץ כלכלי לרשויות מקומיות, המתרחבת לעולם ה-AI עם פלטפורמות SaaS ייעודיות לשלטון המקומי.</p>
   <div class="why-grid">
     <div class="why-card">
       <div class="why-icon">🧠</div>
@@ -624,9 +620,9 @@ __GRID__
 <footer>
   <div class="footer-brand">
     <img src="__LOGO__" alt="לוגו">
-    <div class="footer-txt">Technology Platform · ד.ר שחקים</div>
+    <div class="footer-txt">Technology Platform · ד.ר שחקים בע"מ</div>
   </div>
-  <div class="footer-txt">© 2026 כל הזכויות שמורות לד.ר שחקים</div>
+  <div class="footer-txt">© 2026 כל הזכויות שמורות לד.ר שחקים בע"מ</div>
 </footer>
 
 <script>
