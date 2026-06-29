@@ -459,27 +459,68 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
 .footer-brand img{height:26px;filter:brightness(0) invert(1);opacity:.6}
 .footer-txt{font-size:.68rem;color:rgba(255,255,255,.38)}
 
+/* ───────── MOBILE / TABLET ───────── */
 @media(max-width:860px){
-  .hub-section{min-height:auto;padding:28px 0 24px}
-  .pnode{position:static!important;transform:none;display:inline-block;margin:8px}
-  .hub-canvas{display:none}
-  .hub-orb{position:static;transform:none;margin:16px auto}
-  .orb-pulse{display:none}
-  .hub-section .inner-mobile{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;padding:0 4%}
-  .why-grid{grid-template-columns:1fr}
-  .product-panel.show{grid-template-columns:1fr}
+  /* top bar — keep on one line, smaller, drop the longest phrase + its dot */
+  .topbar{font-size:.54rem;letter-spacing:.05em;gap:9px;padding:7px 4%}
+  .tb-long,.topbar>span:nth-child(4){display:none}
+
+  /* hero no longer stretches to full screen height on phone */
+  .above-fold{min-height:auto}
+
+  /* nav — no overflow: drop secondary button + sub-line, shrink CTA */
+  nav{padding:0 4%}
   .nav-links{display:none}
+  .nav-login{display:none}
+  .nav-brand-sub{display:none}
+  .nav-brand{gap:9px}
+  .nav-brand img{height:30px}
+  .nav-brand-name{font-size:.82rem}
+  .nav-cta{padding:8px 14px;font-size:.78rem;white-space:nowrap}
+
+  /* hub — turn the sun into a clean centered logo hero (no scattered nodes) */
+  .hub-section{flex:0 0 auto;min-height:auto;padding:40px 6%;display:flex;align-items:center;justify-content:center}
+  .hub-canvas{display:none}
+  .orb-pulse{display:none}
+  .hub-orb{position:static;transform:none;margin:0;width:160px;height:160px}
+  .hub-orb img{height:118px}
+  .pnode{display:none!important}
+
+  /* tighten section paddings for phone */
+  .hero-top{padding:18px 6% 14px}
+  .hero-headline{padding:40px 6% 26px}
+  .hero-body{padding:18px 6% 40px}
+  .products{padding:56px 5% 60px}
+  .about{padding:60px 5%}
+  .contact{padding:56px 5%}
+  .why-grid{grid-template-columns:1fr}
+}
+
+@media(max-width:560px){
+  .tech-platform{letter-spacing:.16em;gap:8px;font-size:.92rem}
+  /* shrink big headings so they don't overflow the phone width */
+  .hero-headline h1{font-size:1.7rem}
+  .products-title{font-size:1.6rem}
+  .contact-left h2{font-size:1.9rem}
+  .about h2{font-size:1.5rem}
+  .hub-orb{width:140px;height:140px}
+  .hub-orb img{height:104px}
+  .prod-grid{grid-template-columns:1fr}
+  /* stacked, full-width CTA buttons */
+  .hero-actions{flex-direction:column;align-items:stretch}
+  .btn-navy,.btn-out{text-align:center}
+  footer{justify-content:center;text-align:center}
 }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  Economic Advisory
+  <span class="tb-item">Economic Advisory</span>
   <span class="topbar-dot"></span>
-  Digital Transformation
+  <span class="tb-item">Digital Transformation</span>
   <span class="topbar-dot"></span>
-  SaaS Solutions for Local Government
+  <span class="tb-item tb-long">SaaS Solutions for Local Government</span>
 </div>
 
 <nav>
