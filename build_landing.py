@@ -60,6 +60,24 @@ NODE_POS = [
     [21, 42],  # שכר תיכונים (ארוך)  — שמאל, אמצע
 ]
 
+# מיקומי טבעת ייעודיים לפלאפון — אובל אנכי סימטרי סביב הלוגו (8 נקודות כל 45°)
+MOBILE_NODE_POS = [
+    [50, 12],  # למעלה
+    [25, 24],  # עליון-שמאל
+    [75, 24],  # עליון-ימין
+    [85, 50],  # ימין
+    [75, 76],  # תחתון-ימין
+    [50, 88],  # למטה
+    [25, 76],  # תחתון-שמאל
+    [15, 50],  # שמאל
+]
+
+# תוויות קצרות לריבועי השמש בפלאפון (השם המלא נשאר ברשת המוצרים)
+NODE_SHORT = [
+    "ניהול כח אדם", "תקציב", "שעות הוראה", "הסעות",
+    "פקודת יומן", "אגרות חוץ", "שכר רווחה", "שכר הוראה",
+]
+
 # בניית נודות השמש (אייקון + שם בלבד)
 nodes_html = ""
 for i, p in enumerate(PRODUCTS):
@@ -68,6 +86,7 @@ for i, p in enumerate(PRODUCTS):
       <div class="pnode-card">
         <div class="pnode-icon" style="background:rgba({p['rgb']},.16);color:rgb({p['rgb']})">{p['icon']}</div>
         <div class="pnode-name">{p['name']}</div>
+        <div class="pnode-name-sm">{NODE_SHORT[i]}</div>
       </div>
     </div>
 '''
@@ -85,6 +104,7 @@ for p in PRODUCTS:
 
 # POS ל-JS
 pos_js = "[" + ",".join(f"[{x},{y}]" for x, y in NODE_POS) + "]"
+mpos_js = "[" + ",".join(f"[{x},{y}]" for x, y in MOBILE_NODE_POS) + "]"
 
 page = r"""<!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -278,6 +298,7 @@ nav{
 .pnode.soon .pnode-card{opacity:.82}
 .pnode.soon .pnode-card:hover{opacity:1}
 .pnode-name{font-family:'Rubik',sans-serif;font-size:clamp(.78rem,.95vw,.92rem);font-weight:400;color:#fff;line-height:1.3}
+.pnode-name-sm{display:none;font-family:'Rubik',sans-serif;font-weight:400;color:#fff;line-height:1.25}
 
 /* pulsing ring on live card */
 .pnode.live::before{
@@ -465,26 +486,29 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
   .topbar{font-size:.54rem;letter-spacing:.05em;gap:9px;padding:7px 4%}
   .tb-long,.topbar>span:nth-child(4){display:none}
 
-  /* hero no longer stretches to full screen height on phone */
+  /* hero sizes to content; header offset is set precisely by JS (fitHeader) */
   .above-fold{min-height:auto}
 
-  /* nav — no overflow: drop secondary button + sub-line, shrink CTA */
-  nav{padding:0 4%}
+  /* nav — wrap to two tidy rows so BOTH buttons stay visible */
+  nav{height:auto;min-height:0;padding:9px 4%;flex-wrap:wrap;justify-content:space-between;row-gap:9px}
   .nav-links{display:none}
-  .nav-login{display:none}
   .nav-brand-sub{display:none}
   .nav-brand{gap:9px}
   .nav-brand img{height:30px}
-  .nav-brand-name{font-size:.82rem}
-  .nav-cta{padding:8px 14px;font-size:.78rem;white-space:nowrap}
+  .nav-brand-name{font-size:.86rem}
+  nav>div:last-child{flex-basis:100%;justify-content:center}
+  .nav-login,.nav-cta{padding:8px 15px;font-size:.78rem;white-space:nowrap}
 
-  /* hub — turn the sun into a clean centered logo hero (no scattered nodes) */
-  .hub-section{flex:0 0 auto;min-height:auto;padding:40px 6%;display:flex;align-items:center;justify-content:center}
-  .hub-canvas{display:none}
-  .orb-pulse{display:none}
-  .hub-orb{position:static;transform:none;margin:0;width:160px;height:160px}
-  .hub-orb img{height:118px}
-  .pnode{display:none!important}
+  /* hub — keep the FULL sun (orb + rays + nodes), scaled down proportionally */
+  .hub-section{flex:0 0 auto;min-height:108vw;max-height:470px;padding:0;position:relative;overflow:hidden}
+  .hub-orb{width:104px;height:104px}
+  .hub-orb img{height:78px}
+  .orb-pulse{width:104px;height:104px}
+  .pnode-card{width:clamp(76px,23vw,96px);padding:7px 6px 6px;border-radius:11px;gap:2px}
+  .pnode-icon{padding:6px;border-radius:9px;margin-bottom:0}
+  .pnode-icon svg{width:18px;height:18px}
+  .pnode-name{display:none}
+  .pnode-name-sm{display:block;font-size:.6rem}
 
   /* tighten section paddings for phone */
   .hero-top{padding:18px 6% 14px}
@@ -503,8 +527,6 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
   .products-title{font-size:1.6rem}
   .contact-left h2{font-size:1.9rem}
   .about h2{font-size:1.5rem}
-  .hub-orb{width:140px;height:140px}
-  .hub-orb img{height:104px}
   .prod-grid{grid-template-columns:1fr}
   /* stacked, full-width CTA buttons */
   .hero-actions{flex-direction:column;align-items:stretch}
@@ -669,6 +691,8 @@ __GRID__
 <script>
 // 8 product nodes — balanced ring [xPct, yPct], kept inside bounds
 const POS = __POS__;
+const MPOS = __MPOS__;          // tighter symmetric ring for phones
+let CUR = POS;                  // active position set (desktop vs mobile)
 
 const hub = document.getElementById('hubSection');
 const svg = document.getElementById('hubSvg');
@@ -678,12 +702,13 @@ let pinnedIdx = null;  // הקרן הננעלת בלחיצה (ברירת מחד�
 let hoverIdx = null;   // הקרן המודגשת זמנית במעבר עכבר
 
 function layout() {
+  CUR = (window.innerWidth <= 600) ? MPOS : POS;
   const W = hub.offsetWidth, H = hub.offsetHeight;
   geo = {W, H, cx:W*0.5, cy:H*0.5};
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   nodes.forEach((n, i) => {
-    n.style.left = (W * POS[i][0] / 100) + 'px';
-    n.style.top  = (H * POS[i][1] / 100) + 'px';
+    n.style.left = (W * CUR[i][0] / 100) + 'px';
+    n.style.top  = (H * CUR[i][1] / 100) + 'px';
   });
   drawRays();
 }
@@ -709,8 +734,8 @@ function drawRays() {
 
   order.forEach(i => {
     const n = nodes[i];
-    const nx = W * POS[i][0] / 100;
-    const ny = H * POS[i][1] / 100;
+    const nx = W * CUR[i][0] / 100;
+    const ny = H * CUR[i][1] / 100;
     const rgb = n.dataset.rgb || '255,255,255';
 
     if (i === active) {
@@ -750,8 +775,16 @@ nodes.forEach((n, i) => {
   });
 });
 
-layout();
-window.addEventListener('resize', layout);
+// keep the content starting exactly below the fixed top-bar + nav (handles the
+// taller two-row mobile nav without guessing a fixed margin)
+function fitHeader(){
+  const tb=document.querySelector('.topbar'), nv=document.querySelector('nav'), af=document.querySelector('.above-fold');
+  if(af && tb && nv) af.style.marginTop = (tb.offsetHeight + nv.offsetHeight) + 'px';
+}
+function relayout(){ fitHeader(); layout(); }
+relayout();
+window.addEventListener('resize', relayout);
+window.addEventListener('load', relayout);
 
 // rotating contact headline
 (function(){
@@ -791,6 +824,7 @@ import shutil
 html = (page
         .replace('__NODES__', nodes_html)
         .replace('__GRID__', grid_html)
+        .replace('__MPOS__', mpos_js)
         .replace('__POS__', pos_js)
         .replace('__LOGO__', logo_src)
         .replace('__SHIELD__', shield_src))
