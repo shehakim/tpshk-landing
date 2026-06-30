@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ד.ר שחקים בע"מ | Technology Platform</title>
-<link rel="icon" type="image/png" href="logo_shield.png">
-<link rel="apple-touch-icon" href="logo_shield.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;800;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
@@ -797,14 +795,30 @@ window.addEventListener('load', relayout);
   },3200);
 })();
 
-function sendForm(e){
+async function sendForm(e){
   e.preventDefault();
   const f=e.target;
-  const name=f.name.value, phone=f.phone.value, email=f.email.value, msg=f.message.value;
-  const body=`שם: ${name}\nטלפון: ${phone}\nמייל: ${email}\n\nהודעה:\n${msg}`;
-  window.location.href='mailto:info@shk.org.il?subject=פנייה מהאתר — '+encodeURIComponent(name)+'&body='+encodeURIComponent(body);
-  f.style.display='none';
-  document.getElementById('cfThanks').style.display='block';
+  const btn=f.querySelector('button[type=submit]');
+  const orig=btn.textContent;
+  btn.disabled=true; btn.textContent='שולח...';
+  try{
+    const fd=new FormData(f);
+    fd.append('_subject','פנייה חדשה מדף הנחיתה — תוכנות שחקים');
+    fd.append('_template','table');
+    fd.append('_captcha','false');
+    const res=await fetch('https://formsubmit.co/ajax/info@shk.org.il',{
+      method:'POST',
+      headers:{'Accept':'application/json'},
+      body:fd
+    });
+    const data=await res.json();
+    if(String(data.success)!=='true') throw new Error();
+    f.style.display='none';
+    document.getElementById('cfThanks').style.display='block';
+  }catch(err){
+    btn.disabled=false; btn.textContent=orig;
+    alert('אירעה שגיאה בשליחה. נסו שוב, או כתבו לנו ישירות ל-info@shk.org.il');
+  }
 }
 </script>
 </body>
