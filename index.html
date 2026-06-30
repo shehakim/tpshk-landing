@@ -813,8 +813,15 @@ async function sendForm(e){
     });
     const data=await res.json();
     if(String(data.success)!=='true') throw new Error();
+    const thanks=document.getElementById('cfThanks');
     f.style.display='none';
-    document.getElementById('cfThanks').style.display='block';
+    thanks.style.display='block';
+    setTimeout(()=>{
+      f.reset();
+      btn.disabled=false; btn.textContent=orig;
+      thanks.style.display='none';
+      f.style.display='';
+    },5000);
   }catch(err){
     btn.disabled=false; btn.textContent=orig;
     alert('אירעה שגיאה בשליחה. נסו שוב, או כתבו לנו ישירות ל-info@shk.org.il');
