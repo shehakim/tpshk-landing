@@ -29,7 +29,7 @@ def _icon(k):
     return f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">{_SVG[k]}</svg>'
 
 PRODUCTS = [
-    {"id":"hr",        "name":"שליטה מלאה על כח אדם בחינוך וברווחה ברשות", "rgb":"198,160,75",  "live":True, "shield":True, "url":"hr.tpshk.org.il",
+    {"id":"hr",        "name":"שליטה מלאה על כח אדם בחינוך וברווחה ברשות", "rgb":"198,160,75",  "live":True, "url":"hr.tpshk.org.il",
      "desc":'מערכת מתקדמת לניהול ובקרת מערך כוח האדם להבטחת התנהלות תקינה, שקופה ויעילה. המודול מספק תמונת מצב מדויקת בזמן אמת, תוך השוואה חכמה ורציפה בין התקן המאושר לבין האיוש בפועל — הן ברמת המוסד, התפקיד וחתך הזמן המבוקש.'},
     {"id":"budget",    "name":"בניית תקציב על בסיס אפס",                   "rgb":"62,114,160",  "live":False,
      "desc":'בניית תקציב וניהול פיננסי חכם לאגפי חינוך על בסיס "תקציב אפס". המערכת מסתנכרנת באופן אוטומטי ומלא עם נתוני משרד החינוך העדכניים, ומעניקה למקבלי ההחלטות שליטה מלאה, שקיפות וביטחון בניהול משאבי האגף.'},
@@ -122,6 +122,8 @@ page = r"""<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ד.ר שחקים בע"מ | Technology Platform</title>
+<link rel="icon" type="image/png" href="__SHIELD__">
+<link rel="apple-touch-icon" href="__SHIELD__">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;800;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
