@@ -5,9 +5,10 @@ logo_path = os.path.join(os.path.dirname(__file__), 'לוגו.png')
 logo_b64 = base64.b64encode(open(logo_path, 'rb').read()).decode()
 logo_src = f'data:image/png;base64,{logo_b64}'
 
-# רק המגן — ללא הכיתוב שמתחת (קיים בשורות 375-453)
+# רק המגן — ללא הכיתוב שמתחת (חיתוך העליון + קיצוץ שוליים שקופים לצמוד)
 _img = Image.open(logo_path).convert('RGBA')
 _shield = _img.crop((0, 0, 455, 375))
+_shield = _shield.crop(_shield.getbbox())
 _buf = io.BytesIO()
 _shield.save(_buf, format='PNG')
 shield_src = f'data:image/png;base64,{base64.b64encode(_buf.getvalue()).decode()}'
@@ -28,11 +29,11 @@ def _icon(k):
     return f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">{_SVG[k]}</svg>'
 
 PRODUCTS = [
-    {"id":"hr",        "name":"שליטה מלאה על כח אדם בחינוך וברווחה ברשות", "rgb":"198,160,75",  "live":True,
+    {"id":"hr",        "name":"שליטה מלאה על כח אדם בחינוך וברווחה ברשות", "rgb":"198,160,75",  "live":True, "shield":True, "url":"hr.tpshk.org.il",
      "desc":'מערכת מתקדמת לניהול ובקרת מערך כוח האדם להבטחת התנהלות תקינה, שקופה ויעילה. המודול מספק תמונת מצב מדויקת בזמן אמת, תוך השוואה חכמה ורציפה בין התקן המאושר לבין האיוש בפועל — הן ברמת המוסד, התפקיד וחתך הזמן המבוקש.'},
     {"id":"budget",    "name":"בניית תקציב על בסיס אפס",                   "rgb":"62,114,160",  "live":False,
      "desc":'בניית תקציב וניהול פיננסי חכם לאגפי חינוך על בסיס "תקציב אפס". המערכת מסתנכרנת באופן אוטומטי ומלא עם נתוני משרד החינוך העדכניים, ומעניקה למקבלי ההחלטות שליטה מלאה, שקיפות וביטחון בניהול משאבי האגף.'},
-    {"id":"hours",     "name":"בקרה וניהול שעות הוראה בתיכונים",          "rgb":"124,104,168", "live":False,
+    {"id":"hours",     "name":"בקרה וניהול שעות הוראה בתיכונים",          "rgb":"124,104,168", "live":False, "url":"ay.tpshk.org.il",
      "desc":'כלי אנליטי מתקדם לניהול ומקסום שעות התקן במוסד החינוכי. המערכת מאפשרת בקרה הדוקה וקבלת החלטות מבוססות-נתונים לייעול מקסימלי של שעות התקן במוסד.'},
     {"id":"transport", "name":"בקרה ואופטימיזציה של תקציבי הסעות",          "rgb":"70,154,128",  "live":False,
      "desc":'בקרה ומקסום הכנסות מערך ההיסעים ברשות, תוך הבטחת שלמות הדיווח.'},
@@ -95,10 +96,19 @@ for i, p in enumerate(PRODUCTS):
 grid_html = ""
 for p in PRODUCTS:
     live_cls = " live" if p["live"] else ""
+    # אייקון: מגן החברה לתוכנה שסומנה shield, אחרת אייקון הקו הרגיל
+    if p.get("shield"):
+        icon_html = '<div class="prod-icon prod-icon-shield"><img src="__SHIELD__" alt="לוגו ד.ר שחקים"></div>'
+    else:
+        icon_html = f'<div class="prod-icon" style="background:rgba({p["rgb"]},.15);color:rgb({p["rgb"]})">{p["icon"]}</div>'
+    # קישור לתוכנה החיה באינטרנט — מוצג בסוף הריבוע
+    link_html = ''
+    if p.get("url"):
+        link_html = f'\n        <a href="https://{p["url"]}" class="prod-link" target="_blank" rel="noopener">🌐 {p["url"]}</a>'
     grid_html += f'''      <div class="prod-card{live_cls}" id="card-{p['id']}" style="--clr:{p['rgb']}">
-        <div class="prod-icon" style="background:rgba({p['rgb']},.15);color:rgb({p['rgb']})">{p['icon']}</div>
+        {icon_html}
         <div class="prod-name">{p['name']}</div>
-        <div class="prod-desc">{p['desc']}</div>
+        <div class="prod-desc">{p['desc']}</div>{link_html}
       </div>
 '''
 
@@ -375,6 +385,11 @@ nav{
   padding-bottom:1px;transition:border-color .2s;
 }
 .prod-link:hover{border-color:rgb(var(--clr))}
+/* קישור לתוכנה באינטרנט — נצמד לתחתית הריבוע */
+.prod-card .prod-link{margin-top:auto;padding-top:16px}
+/* אייקון מגן החברה (במקום אייקון הקו) לתוכנה החיה */
+.prod-icon-shield{background:transparent!important;width:auto;height:72px;margin-bottom:14px}
+.prod-icon-shield img{height:72px;width:auto;display:block;filter:drop-shadow(0 4px 10px rgba(41,67,104,.18))}
 /* highlight when navigated from sun */
 .prod-card.highlight{
   border-color:rgb(var(--clr));
