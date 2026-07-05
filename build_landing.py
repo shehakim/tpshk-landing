@@ -159,10 +159,10 @@ nav{
   position:fixed;top:30px;right:0;left:0;z-index:100;
   background:rgba(255,255,255,.96);backdrop-filter:blur(14px);
   border-bottom:1px solid var(--brd);
-  padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:64px;
+  padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:92px;
 }
 .nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;cursor:pointer}
-.nav-brand img{height:34px;width:auto}
+.nav-brand img{height:66px;width:auto}
 .nav-brand-name{font-size:.92rem;font-weight:700;color:var(--navy)}
 .nav-brand-sub{font-size:.58rem;font-weight:700;color:var(--gold);letter-spacing:.08em}
 .nav-links{display:flex;gap:28px;list-style:none;position:absolute;left:50%;transform:translateX(-50%)}
@@ -511,7 +511,7 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
   .nav-links{display:none}
   .nav-brand-sub{display:none}
   .nav-brand{gap:9px}
-  .nav-brand img{height:30px}
+  .nav-brand img{height:50px}
   .nav-brand-name{font-size:.86rem}
   nav>div:last-child{flex-basis:100%;justify-content:center}
   .nav-login,.nav-cta{padding:8px 15px;font-size:.78rem;white-space:nowrap}
