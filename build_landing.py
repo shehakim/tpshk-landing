@@ -902,13 +902,13 @@ __GRID__
     <img src="__LOGO__" alt="לוגו ד.ר שחקים בע&quot;מ">
     <div class="footer-txt">Technology Platform · ד.ר שחקים בע"מ</div>
   </div>
-  <nav class="footer-legal" aria-label="קישורים משפטיים">
+  <div class="footer-legal" role="navigation" aria-label="קישורים משפטיים">
     <button type="button" onclick="openModal('modalA11y')">הצהרת נגישות</button>
     <span class="sep" aria-hidden="true">·</span>
     <button type="button" onclick="openModal('modalPrivacy')">מדיניות פרטיות</button>
     <span class="sep" aria-hidden="true">·</span>
     <button type="button" onclick="openModal('modalCookies')">מדיניות עוגיות</button>
-  </nav>
+  </div>
   <div class="footer-txt">© 2026 כל הזכויות שמורות לד.ר שחקים בע"מ</div>
 </footer>
 
