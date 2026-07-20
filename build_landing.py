@@ -83,12 +83,13 @@ NODE_SHORT = [
 nodes_html = ""
 for i, p in enumerate(PRODUCTS):
     cls = "live" if p["live"] else "soon"
+    status = "זמין עכשיו" if p["live"] else "בפיתוח"
     nodes_html += f'''    <div class="pnode {cls}" id="pn{i}" data-target="card-{p['id']}" data-rgb="{p['rgb']}">
-      <div class="pnode-card">
-        <div class="pnode-icon" style="background:rgba({p['rgb']},.16);color:rgb({p['rgb']})">{p['icon']}</div>
-        <div class="pnode-name">{p['name']}</div>
-        <div class="pnode-name-sm">{NODE_SHORT[i]}</div>
-      </div>
+      <button type="button" class="pnode-card" aria-label="{p['name']} — {status}. מעבר לפירוט התוכנה">
+        <span class="pnode-icon" style="background:rgba({p['rgb']},.16);color:rgb({p['rgb']})" aria-hidden="true">{p['icon']}</span>
+        <span class="pnode-name">{p['name']}</span>
+        <span class="pnode-name-sm" aria-hidden="true">{NODE_SHORT[i]}</span>
+      </button>
     </div>
 '''
 
@@ -98,18 +99,20 @@ for p in PRODUCTS:
     live_cls = " live" if p["live"] else ""
     # אייקון: מגן החברה לתוכנה שסומנה shield, אחרת אייקון הקו הרגיל
     if p.get("shield"):
-        icon_html = '<div class="prod-icon prod-icon-shield"><img src="__SHIELD__" alt="לוגו ד.ר שחקים"></div>'
+        icon_html = '<div class="prod-icon prod-icon-shield"><img src="__SHIELD__" alt="סמל המגן של ד.ר שחקים בע&quot;מ"></div>'
     else:
-        icon_html = f'<div class="prod-icon" style="background:rgba({p["rgb"]},.15);color:rgb({p["rgb"]})">{p["icon"]}</div>'
+        icon_html = f'<div class="prod-icon" style="background:rgba({p["rgb"]},.15);color:rgb({p["rgb"]})" aria-hidden="true">{p["icon"]}</div>'
     # קישור לתוכנה החיה באינטרנט — מוצג בסוף הריבוע
     link_html = ''
     if p.get("url"):
-        link_html = f'\n        <a href="https://{p["url"]}" class="prod-link" target="_blank" rel="noopener">🌐 {p["url"]}</a>'
-    grid_html += f'''      <div class="prod-card{live_cls}" id="card-{p['id']}" style="--clr:{p['rgb']}">
+        link_html = (f'\n        <a href="https://{p["url"]}" class="prod-link" target="_blank" rel="noopener" '
+                     f'aria-label="מעבר לתוכנה {p["name"]} בכתובת {p["url"]} (נפתח בחלון חדש)">'
+                     f'<span aria-hidden="true">🌐</span> {p["url"]}</a>')
+    grid_html += f'''      <article class="prod-card{live_cls}" id="card-{p['id']}" style="--clr:{p['rgb']}">
         {icon_html}
-        <div class="prod-name">{p['name']}</div>
-        <div class="prod-desc">{p['desc']}</div>{link_html}
-      </div>
+        <h3 class="prod-name">{p['name']}</h3>
+        <p class="prod-desc">{p['desc']}</p>{link_html}
+      </article>
 '''
 
 # POS ל-JS
@@ -137,17 +140,185 @@ page = r"""<!DOCTYPE html>
   --white:#FFFFFF;
   --off:#F7F6F2;
   --ink:#1A1A2E;
-  --muted:#6B7A94;
+  --muted:#566780;      /* כהה מספיק ל-4.5:1 מול לבן ומול --off (תקן 5568 AA) */
   --brd:#E2E0D8;
+}
+
+/* טקסט לקוראי מסך בלבד */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* ── נגישות: דילוג לתוכן + מיקוד מקלדת נראה לעין ── */
+.skip-link{
+  position:absolute;top:-60px;right:12px;z-index:200;
+  background:var(--navy);color:#fff;padding:10px 18px;border-radius:0 0 8px 8px;
+  font-size:.9rem;font-weight:700;text-decoration:none;transition:top .2s;
+}
+.skip-link:focus{top:0}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
+[tabindex]:focus-visible,summary:focus-visible{
+  outline:3px solid #B8860B;outline-offset:3px;border-radius:4px;
+}
+.hub-section a:focus-visible,.hub-section [tabindex]:focus-visible,
+.contact a:focus-visible,footer a:focus-visible,.topbar a:focus-visible{
+  outline-color:#F0D98A;
 }
 html{scroll-behavior:smooth}
 body{font-family:'Segoe UI',Arial,sans-serif;color:var(--ink);background:var(--white);direction:rtl;overflow-x:hidden}
+
+/* ── רכיב נגישות צף ── */
+.a11y-btn{
+  position:fixed;bottom:20px;right:20px;z-index:150;
+  width:54px;height:54px;border-radius:50%;border:none;
+  background:var(--navy);color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 22px rgba(41,67,104,.4);
+  transition:transform .2s,background .2s;
+}
+.a11y-btn:hover{background:var(--navy2);transform:scale(1.08)}
+.a11y-btn svg{width:28px;height:28px}
+.a11y-panel{
+  position:fixed;bottom:86px;right:20px;z-index:150;
+  width:290px;max-width:calc(100vw - 40px);
+  background:#fff;border:1.5px solid var(--brd);border-radius:16px;
+  box-shadow:0 20px 60px rgba(41,67,104,.26);
+  padding:18px;display:none;flex-direction:column;gap:8px;
+}
+.a11y-panel[data-open="1"]{display:flex}
+.a11y-panel h2{font-size:1rem;font-weight:800;color:var(--navy);margin-bottom:6px}
+.a11y-opt{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:10px 12px;border:1.5px solid var(--brd);border-radius:10px;
+  background:#fff;color:var(--ink);font-family:inherit;font-size:.87rem;font-weight:600;
+  cursor:pointer;text-align:right;transition:all .18s;
+}
+.a11y-opt:hover{border-color:var(--navy);background:#F4F6FA}
+.a11y-opt[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.a11y-opt span[aria-hidden]{font-size:1.05rem;min-width:22px}
+.a11y-reset{margin-top:4px;background:none;border:none;color:var(--muted);font-family:inherit;
+  font-size:.8rem;text-decoration:underline;cursor:pointer;padding:6px}
+.a11y-links{display:flex;flex-direction:column;gap:4px;margin-top:8px;padding-top:12px;border-top:1px solid var(--brd)}
+.a11y-links button{background:none;border:none;color:var(--navy);font-family:inherit;font-size:.82rem;
+  font-weight:600;text-decoration:underline;cursor:pointer;text-align:right;padding:4px}
+
+/* מצבי נגישות פעילים — נשמרים ב-localStorage */
+html[data-a11y-font="1"]{font-size:112.5%}
+html[data-a11y-font="2"]{font-size:125%}
+html[data-a11y-font="3"]{font-size:140%}
+html[data-a11y-contrast="1"] body{background:#000;color:#fff}
+html[data-a11y-contrast="1"] .hero-headline,
+html[data-a11y-contrast="1"] .hero-body,
+html[data-a11y-contrast="1"] .products,
+html[data-a11y-contrast="1"] .about,
+html[data-a11y-contrast="1"] .hero-top,
+html[data-a11y-contrast="1"] .contact,
+html[data-a11y-contrast="1"] .hub-section,
+html[data-a11y-contrast="1"] footer,
+html[data-a11y-contrast="1"] .topbar,
+html[data-a11y-contrast="1"] nav{background:#000!important}
+html[data-a11y-contrast="1"] .prod-card,
+html[data-a11y-contrast="1"] .why-card,
+html[data-a11y-contrast="1"] .contact-right,
+html[data-a11y-contrast="1"] .pnode-card,
+html[data-a11y-contrast="1"] .a11y-panel,
+html[data-a11y-contrast="1"] .modal-box,
+html[data-a11y-contrast="1"] .cookie-bar{background:#000!important;border-color:#FFD700!important}
+html[data-a11y-contrast="1"] h1,html[data-a11y-contrast="1"] h2,
+html[data-a11y-contrast="1"] h3,html[data-a11y-contrast="1"] .products-title,
+html[data-a11y-contrast="1"] .prod-name,html[data-a11y-contrast="1"] .tech-platform,
+html[data-a11y-contrast="1"] .contact-left h2{
+  color:#FFD700!important;-webkit-text-fill-color:#FFD700!important;background:none!important;
+}
+html[data-a11y-contrast="1"] p,html[data-a11y-contrast="1"] .prod-desc,
+html[data-a11y-contrast="1"] .about-sub,html[data-a11y-contrast="1"] .hero-sub,
+html[data-a11y-contrast="1"] .footer-txt,html[data-a11y-contrast="1"] .why-card p,
+html[data-a11y-contrast="1"] .cdet-inline,html[data-a11y-contrast="1"] li,
+html[data-a11y-contrast="1"] .modal-box li,html[data-a11y-contrast="1"] label{color:#fff!important}
+html[data-a11y-contrast="1"] a,html[data-a11y-contrast="1"] .nav-links a,
+html[data-a11y-contrast="1"] .prod-link{color:#FFD700!important}
+html[data-a11y-contrast="1"] .btn-navy,html[data-a11y-contrast="1"] .nav-cta,
+html[data-a11y-contrast="1"] .cf-submit,html[data-a11y-contrast="1"] .btn-gold,
+html[data-a11y-contrast="1"] .a11y-btn{background:#FFD700!important;color:#000!important}
+html[data-a11y-contrast="1"] input,html[data-a11y-contrast="1"] textarea{
+  background:#000!important;color:#fff!important;border-color:#FFD700!important}
+html[data-a11y-contrast="1"] .hub-section::before,
+html[data-a11y-contrast="1"] .hub-section::after{display:none}
+
+/* הדגשת קישורים */
+html[data-a11y-links="1"] a{text-decoration:underline!important;text-underline-offset:3px;
+  text-decoration-thickness:2px!important;font-weight:700!important}
+html[data-a11y-links="1"] .prod-card,html[data-a11y-links="1"] .pnode-card{outline:2px dashed rgba(200,169,81,.7)}
+
+/* עצירת אנימציות — גם לפי בחירת המשתמש וגם לפי הגדרת מערכת ההפעלה */
+html[data-a11y-motion="1"] *,html[data-a11y-motion="1"] *::before,html[data-a11y-motion="1"] *::after{
+  animation:none!important;transition:none!important;scroll-behavior:auto!important;
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* ── מודאלים: הצהרת נגישות + מדיניות פרטיות ── */
+.modal{
+  position:fixed;inset:0;z-index:180;
+  background:rgba(15,22,38,.72);
+  display:none;align-items:flex-start;justify-content:center;
+  padding:5vh 4%;overflow-y:auto;
+}
+.modal[data-open="1"]{display:flex}
+.modal-box{
+  background:#fff;border-radius:20px;max-width:760px;width:100%;
+  padding:38px 40px 34px;position:relative;
+  box-shadow:0 40px 90px rgba(0,0,0,.4);
+}
+.modal-box h2{font-size:1.5rem;font-weight:900;color:var(--navy);margin-bottom:6px}
+.modal-box h3{font-size:1rem;font-weight:800;color:var(--navy);margin:22px 0 8px}
+.modal-box p,.modal-box li{font-size:.9rem;color:#3D4A5E;line-height:1.8}
+.modal-box ul{padding-right:22px;margin:6px 0}
+.modal-box li{margin-bottom:5px}
+.modal-updated{font-size:.76rem;color:var(--muted);margin-bottom:4px}
+.modal-close{
+  position:absolute;top:16px;left:18px;
+  width:38px;height:38px;border-radius:50%;border:1.5px solid var(--brd);
+  background:#fff;color:var(--navy);font-size:1.2rem;cursor:pointer;line-height:1;
+}
+.modal-close:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.modal-contact{background:#F4F6FA;border-right:4px solid var(--gold);border-radius:10px;padding:16px 18px;margin-top:10px}
+@media(max-width:560px){.modal-box{padding:34px 22px 26px}.modal-box h2{font-size:1.25rem}}
+
+/* ── באנר עוגיות ── */
+.cookie-bar{
+  position:fixed;bottom:0;right:0;left:0;z-index:170;
+  background:#fff;border-top:2px solid var(--gold);
+  box-shadow:0 -8px 34px rgba(41,67,104,.18);
+  padding:18px 5%;display:none;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+}
+.cookie-bar[data-open="1"]{display:flex}
+.cookie-bar p{font-size:.86rem;color:#3D4A5E;line-height:1.65;max-width:620px;margin:0}
+.cookie-bar button{font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;
+  padding:10px 22px;border-radius:9px;border:none;white-space:nowrap}
+.cookie-accept{background:var(--navy);color:#fff}
+.cookie-accept:hover{background:var(--navy2)}
+.cookie-reject{background:#fff;color:var(--navy);border:1.5px solid var(--brd)!important}
+.cookie-reject:hover{border-color:var(--navy)!important}
+.cookie-more{background:none;color:var(--navy);text-decoration:underline;padding:10px 6px!important}
+.cookie-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* ── צ'קבוקס הסכמה בטופס ── */
+.consent-row{display:flex;align-items:flex-start;gap:9px;margin-top:2px}
+.consent-row input[type=checkbox]{
+  width:19px;height:19px;min-width:19px;margin-top:2px;
+  accent-color:var(--navy);cursor:pointer;
+}
+.consent-row label{font-size:.82rem;color:#3D4A5E;line-height:1.6;cursor:pointer}
+.consent-row label button{background:none;border:none;padding:0;color:var(--navy);
+  font-family:inherit;font-size:.82rem;font-weight:700;text-decoration:underline;cursor:pointer}
+.form-note{font-size:.76rem;color:var(--muted);line-height:1.6;margin-top:2px}
 
 /* TOP BAR */
 .topbar{
   position:fixed;top:0;right:0;left:0;z-index:101;
   background:var(--navy2);
-  color:rgba(255,255,255,.65);
+  color:rgba(255,255,255,.88);
   font-size:.58rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
   text-align:center;padding:7px 5%;
   height:30px;display:flex;align-items:center;justify-content:center;gap:14px;
@@ -292,6 +463,7 @@ nav{
 /* Product node cards */
 .pnode{position:absolute;z-index:5;transform:translate(-50%,-50%)}
 .pnode-card{
+  font:inherit;color:inherit;
   background:rgba(255,255,255,.07);
   border:1px solid rgba(255,255,255,.14);
   border-radius:14px;padding:12px 13px 11px;
@@ -311,6 +483,7 @@ nav{
 .pnode.soon .pnode-card:hover{opacity:1}
 .pnode-name{font-family:'Rubik',sans-serif;font-size:clamp(.78rem,.95vw,.92rem);font-weight:400;color:#fff;line-height:1.3}
 .pnode-name-sm{display:none;font-family:'Rubik',sans-serif;font-weight:400;color:#fff;line-height:1.25}
+.pnode-icon{display:inline-flex}
 
 /* pulsing ring on live card */
 .pnode.live::before{
@@ -445,7 +618,7 @@ nav{
 .contact-left h2{font-size:clamp(2rem,3.2vw,3rem);font-weight:900;color:#fff;line-height:1.15;margin-bottom:18px}
 #rotText{display:inline-block;transition:opacity .38s ease,transform .38s ease}
 .contact-left h2 .gold{background:linear-gradient(120deg,#C8A951,#E8D48A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.contact-left p{font-size:.93rem;color:rgba(255,255,255,.62);line-height:1.8;margin-bottom:36px;max-width:380px}
+.contact-left p{font-size:.93rem;color:rgba(255,255,255,.85);line-height:1.8;margin-bottom:36px;max-width:380px}
 /* floating white card */
 .contact-right{
   background:var(--white);
@@ -468,7 +641,9 @@ nav{
 .contact-divider{height:1px;background:var(--brd)}
 /* contact mini-details on left */
 .contact-dets{display:flex;flex-direction:column;gap:10px;margin-top:24px}
-.cdet-inline{display:flex;align-items:center;gap:10px;font-size:.85rem;color:rgba(255,255,255,.7)}
+.cdet-inline{display:flex;align-items:center;gap:10px;font-size:.85rem;color:rgba(255,255,255,.88)}
+.cdet-inline a{color:inherit;text-decoration:none}
+.cdet-inline a:hover{text-decoration:underline}
 .cdet-inline span{font-size:1rem}
 /* contact form */
 .contact-form{display:flex;flex-direction:column;gap:14px}
@@ -494,8 +669,13 @@ nav{
 /* FOOTER */
 footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
 .footer-brand{display:flex;align-items:center;gap:10px}
-.footer-brand img{height:26px;filter:brightness(0) invert(1);opacity:.6}
-.footer-txt{font-size:.68rem;color:rgba(255,255,255,.38)}
+.footer-brand img{height:26px;filter:brightness(0) invert(1);opacity:.85}
+.footer-txt{font-size:.72rem;color:rgba(255,255,255,.8)}
+.footer-legal{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.footer-legal button{background:none;border:none;font-family:inherit;font-size:.72rem;
+  color:rgba(255,255,255,.9);text-decoration:underline;cursor:pointer;padding:4px}
+.footer-legal button:hover{color:var(--gold2)}
+.footer-legal .sep{color:rgba(255,255,255,.4);font-size:.7rem}
 
 /* ───────── MOBILE / TABLET ───────── */
 @media(max-width:860px){
@@ -554,17 +734,19 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
 </head>
 <body>
 
+<a href="#main" class="skip-link">דילוג לתוכן הראשי</a>
+
 <div class="topbar">
   <span class="tb-item">Economic Advisory</span>
-  <span class="topbar-dot"></span>
+  <span class="topbar-dot" aria-hidden="true"></span>
   <span class="tb-item">Digital Transformation</span>
-  <span class="topbar-dot"></span>
+  <span class="topbar-dot" aria-hidden="true"></span>
   <span class="tb-item tb-long">SaaS Solutions for Local Government</span>
 </div>
 
-<nav>
+<nav aria-label="ניווט ראשי">
   <a href="#" class="nav-brand" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
-    <img src="__LOGO__" alt="לוגו">
+    <img src="__LOGO__" alt="לוגו ד.ר שחקים בע&quot;מ — חזרה לראש העמוד">
     <div>
       <div class="nav-brand-name">ד.ר שחקים בע"מ</div>
       <div class="nav-brand-sub">Technology Platform</div>
@@ -575,11 +757,12 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
     <li><a href="#contact">צרו קשר</a></li>
   </ul>
   <div style="display:flex;gap:10px;align-items:center">
-    <a href="https://tpshk.org.il" class="nav-login" target="_blank">🌐 מעבר לאתר החברה</a>
+    <a href="https://tpshk.org.il" class="nav-login" target="_blank" rel="noopener">🌐 מעבר לאתר החברה <span class="sr-only">(נפתח בחלון חדש)</span></a>
     <a href="#contact" class="nav-cta">לקביעת הדגמה חינמית</a>
   </div>
 </nav>
 
+<main id="main">
 <div class="above-fold">
 
   <!-- TECHNOLOGY PLATFORM — above hub -->
@@ -677,33 +860,201 @@ __GRID__
       <h2>נשמח<br><span class="gold" id="rotText">לשמוע מכם</span></h2>
       <p>נשמח לתאם הדגמה חינמית ולהסביר כיצד הפלטפורמה שלנו יכולה לחסוך לרשות שלכם שעות עבודה בכל חודש.</p>
       <div class="contact-dets">
-        <div class="cdet-inline"><span>📧</span> info@shk.org.il</div>
-        <div class="cdet-inline"><span>📞</span> 08-6550759</div>
-        <div class="cdet-inline"><span>🏢</span> האורגים 21, אשדוד</div>
+        <div class="cdet-inline"><span aria-hidden="true">📧</span> <a href="mailto:info@shk.org.il">info@shk.org.il</a></div>
+        <div class="cdet-inline"><span aria-hidden="true">📞</span> <a href="tel:086550759">08-6550759</a></div>
+        <div class="cdet-inline"><span aria-hidden="true">🏢</span> האורגים 21, אשדוד</div>
       </div>
     </div>
     <div class="contact-right">
       <form class="contact-form" id="contactForm" onsubmit="sendForm(event)">
         <div class="cf-row">
-          <input type="text" name="name" placeholder="שם מלא" required>
-          <input type="tel" name="phone" placeholder="טלפון">
+          <div>
+            <label for="cfName" class="sr-only">שם מלא</label>
+            <input type="text" id="cfName" name="name" placeholder="שם מלא" autocomplete="name" required>
+          </div>
+          <div>
+            <label for="cfPhone" class="sr-only">טלפון</label>
+            <input type="tel" id="cfPhone" name="phone" placeholder="טלפון" autocomplete="tel">
+          </div>
         </div>
-        <input type="email" name="email" placeholder="כתובת מייל" required>
-        <textarea name="message" placeholder="הודעה..." required></textarea>
+        <label for="cfEmail" class="sr-only">כתובת מייל</label>
+        <input type="email" id="cfEmail" name="email" placeholder="כתובת מייל" autocomplete="email" required>
+        <label for="cfMsg" class="sr-only">הודעה</label>
+        <textarea id="cfMsg" name="message" placeholder="הודעה..." required></textarea>
+
+        <!-- אישור מדיניות פרטיות — חובה, לא מסומן מראש (חוק הגנת הפרטיות, תיקון 13) -->
+        <div class="consent-row">
+          <input type="checkbox" id="cfPrivacy" name="privacy_consent" required>
+          <label for="cfPrivacy">קראתי ואני מאשר/ת את <button type="button" onclick="openModal('modalPrivacy')">מדיניות הפרטיות</button> ואת השימוש בפרטים שמסרתי לצורך יצירת קשר בנוגע לפנייה זו. <span aria-hidden="true">*</span></label>
+        </div>
+        <p class="form-note">בטופס זה נאספים: שם מלא, כתובת מייל, מספר טלפון ותוכן ההודעה. הפרטים משמשים אך ורק למענה על פנייתך ואינם מועברים לצד שלישי.</p>
+
         <button type="submit" class="cf-submit">שלח הודעה ←</button>
       </form>
-      <div class="cf-thanks" id="cfThanks">✓ תודה! נחזור אליכם בהקדם.</div>
+      <div class="cf-thanks" id="cfThanks" role="status">✓ תודה! נחזור אליכם בהקדם.</div>
     </div>
   </div>
 </section>
+</main>
 
 <footer>
   <div class="footer-brand">
-    <img src="__LOGO__" alt="לוגו">
+    <img src="__LOGO__" alt="לוגו ד.ר שחקים בע&quot;מ">
     <div class="footer-txt">Technology Platform · ד.ר שחקים בע"מ</div>
   </div>
+  <nav class="footer-legal" aria-label="קישורים משפטיים">
+    <button type="button" onclick="openModal('modalA11y')">הצהרת נגישות</button>
+    <span class="sep" aria-hidden="true">·</span>
+    <button type="button" onclick="openModal('modalPrivacy')">מדיניות פרטיות</button>
+    <span class="sep" aria-hidden="true">·</span>
+    <button type="button" onclick="openModal('modalCookies')">מדיניות עוגיות</button>
+  </nav>
   <div class="footer-txt">© 2026 כל הזכויות שמורות לד.ר שחקים בע"מ</div>
 </footer>
+
+<!-- ═══════════ רכיב נגישות ═══════════ -->
+<button type="button" class="a11y-btn" id="a11yBtn" aria-label="פתיחת תפריט נגישות" aria-expanded="false" aria-controls="a11yPanel">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="3.8" r="2.2"/><path d="M20.5 7.6c-2.6.9-5.3 1.4-8.5 1.4s-5.9-.5-8.5-1.4a1.1 1.1 0 1 0-.7 2.1c1.9.7 3.9 1.1 6 1.3v2.3l-2.4 6.8a1.1 1.1 0 0 0 2.1.8L10.4 15h3.2l1.9 5.9a1.1 1.1 0 0 0 2.1-.8L15.2 13.3V11c2.1-.2 4.1-.6 6-1.3a1.1 1.1 0 1 0-.7-2.1z"/></svg>
+</button>
+
+<div class="a11y-panel" id="a11yPanel" role="dialog" aria-label="תפריט נגישות" aria-modal="false">
+  <h2>הגדרות נגישות</h2>
+  <button type="button" class="a11y-opt" id="optFont" aria-pressed="false">
+    <span aria-hidden="true">🔠</span> הגדלת טקסט <span id="fontLevel" style="margin-inline-start:auto;font-size:.78rem">רגיל</span>
+  </button>
+  <button type="button" class="a11y-opt" id="optContrast" aria-pressed="false">
+    <span aria-hidden="true">◐</span> ניגודיות גבוהה
+  </button>
+  <button type="button" class="a11y-opt" id="optMotion" aria-pressed="false">
+    <span aria-hidden="true">⏸</span> עצירת אנימציות
+  </button>
+  <button type="button" class="a11y-opt" id="optLinks" aria-pressed="false">
+    <span aria-hidden="true">🔗</span> הדגשת קישורים
+  </button>
+  <button type="button" class="a11y-reset" id="a11yReset">איפוס כל ההגדרות</button>
+  <div class="a11y-links">
+    <button type="button" onclick="openModal('modalA11y')">הצהרת הנגישות המלאה</button>
+    <button type="button" onclick="openModal('modalPrivacy')">מדיניות פרטיות</button>
+  </div>
+</div>
+
+<!-- ═══════════ מודאל: הצהרת נגישות ═══════════ -->
+<div class="modal" id="modalA11y" role="dialog" aria-modal="true" aria-labelledby="a11yTitle">
+  <div class="modal-box">
+    <button type="button" class="modal-close" aria-label="סגירת החלון">✕</button>
+    <p class="modal-updated">עודכן לאחרונה: יולי 2026</p>
+    <h2 id="a11yTitle">הצהרת נגישות</h2>
+    <p>ד.ר שחקים בע"מ רואה חשיבות רבה במתן שירות שוויוני לכלל הציבור, ופועלת להנגשת אתר זה לאנשים עם מוגבלות בהתאם ל<strong>תקן הישראלי 5568</strong> ברמת התאמה <strong>AA</strong>, ובהתאם ל<strong>חוק שוויון זכויות לאנשים עם מוגבלות, התשנ"ח-1998</strong> ולתקנות שהותקנו מכוחו.</p>
+
+    <h3>מה הונגש באתר</h3>
+    <ul>
+      <li><strong>ניווט מלא במקלדת</strong> — ניתן להגיע לכל קישור, כפתור ושדה באמצעות מקש Tab בלבד, עם חיווי מיקוד ברור וקישור "דילוג לתוכן הראשי".</li>
+      <li><strong>תמיכה בקוראי מסך</strong> — מבנה כותרות היררכי, תוויות (labels) לכל שדה בטופס, טקסט חלופי (alt) לכל התמונות ותיאורי ARIA לרכיבים אינטראקטיביים.</li>
+      <li><strong>ניגודיות צבעים</strong> — יחס ניגודיות של 4.5:1 לפחות לטקסט רגיל, בהתאם לדרישת התקן.</li>
+      <li><strong>רכיב נגישות ייעודי</strong> — הגדלת טקסט (עד 140%), מצב ניגודיות גבוהה, עצירת אנימציות והדגשת קישורים. ההגדרות נשמרות בדפדפן שלך לביקורים הבאים.</li>
+      <li><strong>כיבוד העדפות מערכת</strong> — האתר מזהה אוטומטית הגדרת "צמצום תנועה" (prefers-reduced-motion) במערכת ההפעלה ועוצר אנימציות בהתאם.</li>
+      <li><strong>התאמה למכשירים ניידים</strong> — האתר מותאם לגלישה בטלפון ובטאבלט ותומך בהגדלת תצוגה.</li>
+    </ul>
+
+    <h3>הסתייגויות והחרגות</h3>
+    <p>למרות מאמצינו, ייתכן שיימצאו באתר חלקים או תכנים שטרם הונגשו במלואם. אנו ממשיכים לפעול לשיפור רמת הנגישות באופן שוטף. אם נתקלת בתקלת נגישות או בעמוד שאינו נגיש — נשמח שתדווח/י לנו ונטפל בכך בהקדם.</p>
+
+    <h3>פרטי רכזת הנגישות</h3>
+    <div class="modal-contact">
+      <p>
+        <strong>רכזת נגישות:</strong> רעות בוקר<br>
+        <strong>טלפון:</strong> <a href="tel:086550759">08-6550759</a><br>
+        <strong>דוא"ל:</strong> <a href="mailto:info@shk.org.il">info@shk.org.il</a><br>
+        <strong>כתובת:</strong> האורגים 21, אשדוד
+      </p>
+      <p style="margin-top:10px">פניות בנושא נגישות ייענו תוך <strong>3 ימי עסקים</strong>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ מודאל: מדיניות פרטיות ═══════════ -->
+<div class="modal" id="modalPrivacy" role="dialog" aria-modal="true" aria-labelledby="privTitle">
+  <div class="modal-box">
+    <button type="button" class="modal-close" aria-label="סגירת החלון">✕</button>
+    <p class="modal-updated">עודכן לאחרונה: יולי 2026</p>
+    <h2 id="privTitle">מדיניות פרטיות</h2>
+    <p>ד.ר שחקים בע"מ (ח.פ. — האורגים 21, אשדוד) מכבדת את פרטיותך. מדיניות זו מסבירה איזה מידע נאסף באתר, לשם מה, וכיצד הוא מוגן — בהתאם ל<strong>חוק הגנת הפרטיות, התשמ"א-1981, לרבות תיקון 13 שנכנס לתוקף באוגוסט 2025</strong>.</p>
+
+    <h3>איזה מידע נאסף</h3>
+    <p>המידע היחיד שאנו אוספים הוא מידע שאת/ה מוסר/ת לנו מרצונך בטופס יצירת הקשר:</p>
+    <ul>
+      <li><strong>שם מלא</strong></li>
+      <li><strong>כתובת דואר אלקטרוני</strong></li>
+      <li><strong>מספר טלפון</strong> (אופציונלי)</li>
+      <li><strong>תוכן ההודעה</strong> שכתבת</li>
+      <li><strong>תאריך ושעת הפנייה ומקורה</strong> — נשמרים לצורך תיעוד ההסכמה שנתת</li>
+    </ul>
+    <p>אין חובה חוקית למסור מידע זה, אך בלעדיו לא נוכל לחזור אליך.</p>
+
+    <h3>למה המידע משמש</h3>
+    <ul>
+      <li>מענה על פנייתך ויצירת קשר חוזר בנוגע אליה בלבד</li>
+      <li>תיאום הדגמה או מתן מידע על השירותים שביקשת</li>
+    </ul>
+    <p><strong>איננו מבצעים דיוור שיווקי</strong> ואיננו שולחים הודעות פרסומיות. פרטיך לא ישמשו לצרכים אחרים מעבר לפנייה שיזמת.</p>
+
+    <h3>העברת מידע לצד שלישי</h3>
+    <p>איננו מוכרים, משכירים או מעבירים את פרטיך לצדדים שלישיים למטרות מסחריות. שליחת הטופס מתבצעת באמצעות שירות <strong>FormSubmit</strong>, המעביר את תוכן הפנייה לתיבת הדוא"ל שלנו. מידע עשוי להימסר לגורם שלישי רק אם נידרש לכך על פי דין או צו שיפוטי.</p>
+
+    <h3>אבטחת המידע</h3>
+    <p>אנו נוקטים אמצעי אבטחה סבירים להגנה על המידע שנאסף מפני גישה, שימוש או גילוי בלתי מורשים:</p>
+    <ul>
+      <li>העברת הנתונים מתבצעת בתקשורת מוצפנת (HTTPS/TLS)</li>
+      <li>הגישה למידע מוגבלת לעובדים המורשים לכך בלבד ולצורך מילוי תפקידם</li>
+      <li>המידע אינו נשמר במסד נתונים פומבי ואינו חשוף לגישה חיצונית</li>
+      <li>המידע נשמר לפרק הזמן הנדרש לטיפול בפנייה ולעמידה בחובות שבדין, ולאחר מכן נמחק</li>
+    </ul>
+
+    <h3>זכויותיך</h3>
+    <p>על פי חוק, את/ה זכאי/ת <strong>לעיין</strong> במידע שנאסף אודותיך, <strong>לתקן</strong> מידע שגוי או לא מעודכן, ו<strong>לבקש את מחיקתו</strong>. לממש זכויות אלה ניתן בפנייה אלינו בפרטים שלהלן, ונטפל בבקשה בתוך פרק זמן סביר ובהתאם להוראות הדין.</p>
+
+    <h3>יצירת קשר בנושא פרטיות</h3>
+    <div class="modal-contact">
+      <p>
+        <strong>דוא"ל:</strong> <a href="mailto:info@shk.org.il">info@shk.org.il</a><br>
+        <strong>טלפון:</strong> <a href="tel:086550759">08-6550759</a><br>
+        <strong>כתובת:</strong> האורגים 21, אשדוד
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ מודאל: מדיניות עוגיות ═══════════ -->
+<div class="modal" id="modalCookies" role="dialog" aria-modal="true" aria-labelledby="ckTitle">
+  <div class="modal-box">
+    <button type="button" class="modal-close" aria-label="סגירת החלון">✕</button>
+    <p class="modal-updated">עודכן לאחרונה: יולי 2026</p>
+    <h2 id="ckTitle">מדיניות עוגיות (Cookies)</h2>
+    <p>עוגייה (Cookie) היא קובץ טקסט קטן שנשמר בדפדפן שלך בעת הגלישה באתר. להלן פירוט מלא של השימוש באתר זה.</p>
+
+    <h3>עוגיות הכרחיות בלבד</h3>
+    <p>אתר זה עושה שימוש מצומצם ביותר, ורק באחסון מקומי (localStorage) הנדרש לתפקוד תקין:</p>
+    <ul>
+      <li><strong>הגדרות הנגישות שבחרת</strong> — גודל טקסט, ניגודיות, עצירת אנימציות והדגשת קישורים. נשמרות כדי שלא תצטרך/י להגדיר אותן מחדש בכל ביקור.</li>
+      <li><strong>אישור הודעת העוגיות</strong> — כדי שההודעה לא תוצג לך שוב.</li>
+    </ul>
+
+    <h3>מה איננו עושים</h3>
+    <p>אתר זה <strong>אינו משתמש</strong> בעוגיות מעקב, בפיקסלים פרסומיים, ב-Google Analytics, ב-Facebook Pixel או בכל כלי מעקב או פרסום מבוסס-צד-שלישי. המידע השמור בדפדפן שלך <strong>אינו נשלח לשרתינו ואינו מזהה אותך אישית</strong>.</p>
+
+    <h3>איך למחוק</h3>
+    <p>ניתן למחוק את המידע בכל עת דרך הגדרות הדפדפן (ניקוי נתוני גלישה), או באמצעות כפתור "איפוס כל ההגדרות" בתפריט הנגישות. מחיקה לא תפגע ביכולת השימוש באתר.</p>
+    <p>לפרטים נוספים ראו את <button type="button" onclick="openModal('modalPrivacy')" style="background:none;border:none;color:var(--navy);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer;padding:0">מדיניות הפרטיות</button>.</p>
+  </div>
+</div>
+
+<!-- ═══════════ באנר עוגיות ═══════════ -->
+<div class="cookie-bar" id="cookieBar" role="region" aria-label="הודעת עוגיות">
+  <p><strong>אנחנו משתמשים באחסון מקומי בדפדפן</strong> כדי לשמור את הגדרות הנגישות שתבחר/י ואת אישור ההודעה הזו בלבד. איננו משתמשים בעוגיות מעקב או בפיקסלים פרסומיים.</p>
+  <div class="cookie-actions">
+    <button type="button" class="cookie-accept" id="cookieAccept">הבנתי</button>
+  </div>
+</div>
 
 <script>
 // 8 product nodes — balanced ring [xPct, yPct], kept inside bounds
@@ -777,6 +1128,9 @@ nodes.forEach((n, i) => {
   // hover → highlight this ray temporarily
   n.addEventListener('mouseenter', () => { hoverIdx = i; drawRays(); });
   n.addEventListener('mouseleave', () => { hoverIdx = null; drawRays(); });
+  // מיקוד מקלדת → אותה הדגשה בדיוק כמו מעבר עכבר
+  n.addEventListener('focusin',  () => { hoverIdx = i; drawRays(); });
+  n.addEventListener('focusout', () => { hoverIdx = null; drawRays(); });
   // click → pin this ray permanently + scroll to its card & highlight it
   n.addEventListener('click', () => {
     pinnedIdx = i; hoverIdx = null; drawRays();
@@ -824,14 +1178,125 @@ window.addEventListener('load', relayout);
   },3200);
 })();
 
+/* ═══════════ רכיב נגישות — נשמר ב-localStorage ═══════════ */
+(function(){
+  const root=document.documentElement;
+  const store={
+    get(k,d){ try{ return localStorage.getItem('a11y_'+k) ?? d; }catch(e){ return d; } },
+    set(k,v){ try{ localStorage.setItem('a11y_'+k,v); }catch(e){} },
+    del(k){ try{ localStorage.removeItem('a11y_'+k); }catch(e){} }
+  };
+  const FONT_LABELS=['רגיל','גדול','גדול מאוד','ענק'];
+
+  function apply(){
+    const font=store.get('font','0');
+    const contrast=store.get('contrast','0');
+    const motion=store.get('motion','0');
+    const links=store.get('links','0');
+    font==='0' ? root.removeAttribute('data-a11y-font') : root.setAttribute('data-a11y-font',font);
+    contrast==='1' ? root.setAttribute('data-a11y-contrast','1') : root.removeAttribute('data-a11y-contrast');
+    motion==='1' ? root.setAttribute('data-a11y-motion','1') : root.removeAttribute('data-a11y-motion');
+    links==='1' ? root.setAttribute('data-a11y-links','1') : root.removeAttribute('data-a11y-links');
+    const fo=document.getElementById('optFont');
+    if(fo){ fo.setAttribute('aria-pressed',font!=='0'); document.getElementById('fontLevel').textContent=FONT_LABELS[+font]; }
+    const set=(id,on)=>{const el=document.getElementById(id); if(el) el.setAttribute('aria-pressed',on);};
+    set('optContrast',contrast==='1'); set('optMotion',motion==='1'); set('optLinks',links==='1');
+    if(typeof relayout==='function') relayout();
+  }
+
+  const btn=document.getElementById('a11yBtn'), panel=document.getElementById('a11yPanel');
+  function togglePanel(open){
+    const isOpen = open ?? panel.getAttribute('data-open')!=='1';
+    panel.setAttribute('data-open', isOpen?'1':'0');
+    btn.setAttribute('aria-expanded', isOpen);
+    if(isOpen) panel.querySelector('.a11y-opt').focus();
+  }
+  btn.addEventListener('click',()=>togglePanel());
+  document.addEventListener('click',e=>{
+    if(panel.getAttribute('data-open')==='1' && !panel.contains(e.target) && !btn.contains(e.target)) togglePanel(false);
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape' && panel.getAttribute('data-open')==='1'){ togglePanel(false); btn.focus(); }
+  });
+
+  document.getElementById('optFont').addEventListener('click',()=>{
+    store.set('font', String((+store.get('font','0')+1)%4)); apply();
+  });
+  document.getElementById('optContrast').addEventListener('click',()=>{
+    store.set('contrast', store.get('contrast','0')==='1'?'0':'1'); apply();
+  });
+  document.getElementById('optMotion').addEventListener('click',()=>{
+    store.set('motion', store.get('motion','0')==='1'?'0':'1'); apply();
+  });
+  document.getElementById('optLinks').addEventListener('click',()=>{
+    store.set('links', store.get('links','0')==='1'?'0':'1'); apply();
+  });
+  document.getElementById('a11yReset').addEventListener('click',()=>{
+    ['font','contrast','motion','links'].forEach(store.del);
+    try{ localStorage.removeItem('cookie_consent'); }catch(e){}
+    apply();
+  });
+
+  apply();
+})();
+
+/* ═══════════ מודאלים — עם מלכודת מיקוד והחזרת המיקוד ═══════════ */
+let _lastFocus=null;
+function openModal(id){
+  const m=document.getElementById(id);
+  if(!m) return;
+  _lastFocus=document.activeElement;
+  m.setAttribute('data-open','1');
+  document.body.style.overflow='hidden';
+  m.querySelector('.modal-close').focus();
+}
+function closeModal(m){
+  m.setAttribute('data-open','0');
+  document.body.style.overflow='';
+  if(_lastFocus) _lastFocus.focus();
+}
+document.querySelectorAll('.modal').forEach(m=>{
+  m.querySelector('.modal-close').addEventListener('click',()=>closeModal(m));
+  m.addEventListener('click',e=>{ if(e.target===m) closeModal(m); });
+  m.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ closeModal(m); return; }
+    if(e.key!=='Tab') return;
+    const f=[...m.querySelectorAll('a[href],button,input,textarea,[tabindex]:not([tabindex="-1"])')]
+              .filter(el=>el.offsetParent!==null);
+    if(!f.length) return;
+    const first=f[0], last=f[f.length-1];
+    if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+  });
+});
+
+/* ═══════════ באנר עוגיות ═══════════ */
+(function(){
+  const bar=document.getElementById('cookieBar');
+  let consent=null;
+  try{ consent=localStorage.getItem('cookie_consent'); }catch(e){}
+  if(!consent) setTimeout(()=>bar.setAttribute('data-open','1'),900);
+  const decide=v=>{ try{ localStorage.setItem('cookie_consent',v); }catch(e){} bar.setAttribute('data-open','0'); };
+  document.getElementById('cookieAccept').addEventListener('click',()=>decide('accepted'));
+})();
+
 async function sendForm(e){
   e.preventDefault();
   const f=e.target;
+  if(!f.privacy_consent.checked){
+    alert('יש לאשר את מדיניות הפרטיות לפני שליחת הטופס.');
+    f.privacy_consent.focus();
+    return;
+  }
   const btn=f.querySelector('button[type=submit]');
   const orig=btn.textContent;
   btn.disabled=true; btn.textContent='שולח...';
   try{
     const fd=new FormData(f);
+    // תיעוד ההסכמה — מתי, איך ומאיפה ניתנה (חוק הגנת הפרטיות)
+    fd.set('privacy_consent','כן — אושר במפורש בטופס');
+    fd.append('תאריך ושעת ההסכמה', new Date().toLocaleString('he-IL',{dateStyle:'full',timeStyle:'medium'}));
+    fd.append('מקור ההסכמה', 'טופס יצירת קשר · ' + window.location.href);
     fd.append('_subject','פנייה חדשה מדף הנחיתה — תוכנות שחקים');
     fd.append('_template','table');
     fd.append('_captcha','false');
