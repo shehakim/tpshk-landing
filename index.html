@@ -115,7 +115,7 @@ html[data-a11y-contrast="1"] .cdet-inline,html[data-a11y-contrast="1"] li,
 html[data-a11y-contrast="1"] .modal-box li,html[data-a11y-contrast="1"] label{color:#fff!important}
 html[data-a11y-contrast="1"] a,html[data-a11y-contrast="1"] .nav-links a,
 html[data-a11y-contrast="1"] .prod-link{color:#FFD700!important}
-html[data-a11y-contrast="1"] .btn-navy,html[data-a11y-contrast="1"] .nav-cta,
+html[data-a11y-contrast="1"] .btn-navy,html[data-a11y-contrast="1"] .nav-app,html[data-a11y-contrast="1"] .btn-app,html[data-a11y-contrast="1"] .nav-cta,
 html[data-a11y-contrast="1"] .cf-submit,html[data-a11y-contrast="1"] .btn-gold,
 html[data-a11y-contrast="1"] .a11y-btn{background:#FFD700!important;color:#000!important}
 html[data-a11y-contrast="1"] input,html[data-a11y-contrast="1"] textarea{
@@ -222,6 +222,12 @@ nav{
 .nav-cta:hover{background:var(--navy2);transform:translateY(-1px)}
 .nav-login{border:1.5px solid var(--navy);color:var(--navy);padding:8px 18px;border-radius:8px;font-size:.84rem;font-weight:600;text-decoration:none;transition:all .2s;display:flex;align-items:center;gap:6px}
 .nav-login:hover{background:var(--navy);color:#fff}
+.nav-app{background:linear-gradient(135deg,var(--gold),#B8963A);color:#fff;padding:9px 22px;border-radius:8px;font-size:.84rem;font-weight:700;text-decoration:none;transition:all .2s;display:flex;align-items:center;gap:6px;box-shadow:0 3px 12px rgba(200,169,81,.35)}
+.nav-app:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(200,169,81,.5)}
+.btn-app{background:linear-gradient(135deg,var(--gold),#B8963A);color:#fff;padding:13px 30px;border-radius:9px;font-size:.9rem;font-weight:700;text-decoration:none;box-shadow:0 4px 20px rgba(200,169,81,.35);transition:all .22s}
+.btn-app:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,169,81,.5)}
+.prod-enter{text-align:center;margin-top:38px}
+.prod-enter p{color:var(--muted);font-size:.92rem;margin-bottom:14px}
 
 /* Sun node icon (color set inline per product) */
 .pnode-icon{border-radius:12px;padding:9px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:2px}
@@ -576,8 +582,8 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
   .nav-brand{gap:9px}
   .nav-brand img{height:50px}
   .nav-brand-name{font-size:.86rem}
-  nav>div:last-child{flex-basis:100%;justify-content:center}
-  .nav-login,.nav-cta{padding:8px 15px;font-size:.78rem;white-space:nowrap}
+  nav>div:last-child{flex-basis:100%;justify-content:center;flex-wrap:wrap;row-gap:8px}
+  .nav-login,.nav-cta,.nav-app{padding:8px 15px;font-size:.78rem;white-space:nowrap}
 
   /* hub — keep the FULL sun (orb + rays + nodes), scaled down proportionally */
   .hub-section{flex:0 0 auto;min-height:108vw;max-height:470px;padding:0;position:relative;overflow:hidden}
@@ -610,7 +616,7 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
   .prod-grid{grid-template-columns:1fr}
   /* stacked, full-width CTA buttons */
   .hero-actions{flex-direction:column;align-items:stretch}
-  .btn-navy,.btn-out{text-align:center}
+  .btn-navy,.btn-out,.btn-app{text-align:center}
   footer{justify-content:center;text-align:center}
 }
 </style>
@@ -641,6 +647,7 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
   </ul>
   <div style="display:flex;gap:10px;align-items:center">
     <a href="https://tpshk.org.il" class="nav-login" target="_blank" rel="noopener">🌐 מעבר לאתר החברה <span class="sr-only">(נפתח בחלון חדש)</span></a>
+    <a href="https://app.tpshk.org.il" class="nav-app" target="_blank" rel="noopener"><span aria-hidden="true">🔐</span> כניסה לפלטפורמה <span class="sr-only">(נפתח בחלון חדש)</span></a>
     <a href="#contact" class="nav-cta">לקביעת הדגמה חינמית</a>
   </div>
 </nav>
@@ -753,6 +760,7 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
     <span class="tech-chip">Data-Driven</span>
   </div>
   <div class="hero-actions">
+    <a href="https://app.tpshk.org.il" class="btn-app" target="_blank" rel="noopener">🔐 כניסה לפלטפורמה <span class="sr-only">(נפתח בחלון חדש)</span></a>
     <a href="#products" class="btn-navy">גלה את הפלטפורמה ↓</a>
     <a href="#contact" class="btn-out">קבל הדגמה</a>
   </div>
@@ -771,7 +779,6 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
         <div class="prod-icon" style="background:rgba(198,160,75,.15);color:rgb(198,160,75)" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="9" cy="7" r="3"/><path d="M22 19v-1a4 4 0 0 0-3-3.87"/><path d="M16 4.13a4 4 0 0 1 0 7.75"/></svg></div>
         <h3 class="prod-name">שליטה מלאה על כוח אדם, תקציב וכלי ניהול במקום אחד</h3>
         <p class="prod-desc">מערכת מתקדמת לניהול ובקרת מערך כוח האדם להבטחת התנהלות תקינה, שקופה ויעילה. המודול מספק תמונת מצב מדויקת בזמן אמת, תוך השוואה חכמה ורציפה בין התקן המאושר לבין האיוש בפועל — הן ברמת המוסד, התפקיד וחתך הזמן המבוקש. לצד זאת, המערכת מאפשרת בניית תקציב וניהול פיננסי חכם על בסיס "תקציב אפס", בסנכרון אוטומטי ומלא עם נתוני משרד החינוך העדכניים — לשליטה, שקיפות וביטחון בניהול משאבי האגף.</p>
-        <a href="https://hr.tpshk.org.il" class="prod-link" target="_blank" rel="noopener" aria-label="מעבר לתוכנה שליטה מלאה על כוח אדם, תקציב וכלי ניהול במקום אחד בכתובת hr.tpshk.org.il (נפתח בחלון חדש)"><span aria-hidden="true">🌐</span> hr.tpshk.org.il</a>
       </article>
       <article class="prod-card" id="card-transport" style="--clr:70,154,128">
         <div class="prod-icon" style="background:rgba(70,154,128,.15);color:rgb(70,154,128)" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="2"/><path d="M4 11h16"/><path d="M7 17v2M17 17v2"/><circle cx="8" cy="14" r=".6" fill="currentColor"/><circle cx="16" cy="14" r=".6" fill="currentColor"/></svg></div>
@@ -782,19 +789,16 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
         <div class="prod-icon" style="background:rgba(124,104,168,.15);color:rgb(124,104,168)" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2h9l5 5v15H5z"/><path d="M14 2v5h5"/><path d="M8 11h6M8 14h6"/><circle cx="11" cy="18" r="2"/></svg></div>
         <h3 class="prod-name">מיצוי הכנסות, ניהול תקציב וניהול שעות ההוראה והמנהלה בתיכונים</h3>
         <p class="prod-desc">התוכנה מספקת מענה כולל למוסד ולרשות ומבצעת באופן אוטומטי לחלוטין תקציב למוסד, ניהול מלא ואוטומטי של שעות ההוראה ועובדי המנהלה למול הניצול. השירותים מסופקים לעשרות רבות של מוסדות.</p>
-        <a href="https://ay.tpshk.org.il" class="prod-link" target="_blank" rel="noopener" aria-label="מעבר לתוכנה מיצוי הכנסות, ניהול תקציב וניהול שעות ההוראה והמנהלה בתיכונים בכתובת ay.tpshk.org.il (נפתח בחלון חדש)"><span aria-hidden="true">🌐</span> ay.tpshk.org.il</a>
       </article>
       <article class="prod-card" id="card-journal" style="--clr:176,138,70">
         <div class="prod-icon" style="background:rgba(176,138,70,.15);color:rgb(176,138,70)" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M4 17.5h13"/><path d="M9 7h6"/></svg></div>
         <h3 class="prod-name">פקודת יומן אוטומטית</h3>
         <p class="prod-desc">המערכת מבצעת קליטה אוטומטית ומהירה של תקציבי משרדי הממשלה, ודואגת לרישום מדויק וישיר שלהם בספרי התקציב של הרשות — תוך ייעול ומיכון תהליכים לחיסכון בזמן ומניעת טעויות.</p>
-        <a href="https://py.tpshk.org.il" class="prod-link" target="_blank" rel="noopener" aria-label="מעבר לתוכנה פקודת יומן אוטומטית בכתובת py.tpshk.org.il (נפתח בחלון חדש)"><span aria-hidden="true">🌐</span> py.tpshk.org.il</a>
       </article>
       <article class="prod-card" id="card-fees" style="--clr:176,98,84">
         <div class="prod-icon" style="background:rgba(176,98,84,.15);color:rgb(176,98,84)" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></div>
         <h3 class="prod-name">אגרות חוץ - מענה מקיף</h3>
         <p class="prod-desc">מערך כלים רחב המסייע במיצוי זכויות ומשאבים לרשות הקולטת בשלל תחומים מורכבים: גני ילדים, ליווי בהסעות, שיבוץ סייעות ודירוגי ותק.</p>
-        <a href="https://ag.tpshk.org.il" class="prod-link" target="_blank" rel="noopener" aria-label="מעבר לתוכנה אגרות חוץ - מענה מקיף בכתובת ag.tpshk.org.il (נפתח בחלון חדש)"><span aria-hidden="true">🌐</span> ag.tpshk.org.il</a>
       </article>
       <article class="prod-card" id="card-salary" style="--clr:150,116,84">
         <div class="prod-icon" style="background:rgba(150,116,84,.15);color:rgb(150,116,84)" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></div>
@@ -805,7 +809,6 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
         <div class="prod-icon" style="background:rgba(168,96,132,.15);color:rgb(168,96,132)" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7.5-3.8 7.5-9.5V5.4L12 2.5 4.5 5.4v7.1C4.5 18.2 12 22 12 22z"/><path d="M8.8 12.2l2.2 2.2 4.2-4.4"/></svg></div>
         <h3 class="prod-name">אבטחת מוסדות חינוך</h3>
         <p class="prod-desc">בקרה פיננסית ומקסום הכנסות באבטחת מוסדות חינוך, על בסיס הצלבה מלאה בין התקן המאושר, השעות המדווחות והחשבוניות בפועל. המערכת קוראת אוטומטית את קבצי המערכות הארציות, החשבוניות ודוחות הנוכחות, ומעניקה למקבלי ההחלטות איתור מיידי של פערים, השלכה תקציבית בשקלים ושליטה מלאה מול חברות האבטחה.</p>
-        <a href="https://am.tpshk.org.il" class="prod-link" target="_blank" rel="noopener" aria-label="מעבר לתוכנה אבטחת מוסדות חינוך בכתובת am.tpshk.org.il (נפתח בחלון חדש)"><span aria-hidden="true">🌐</span> am.tpshk.org.il</a>
       </article>
       <article class="prod-card" id="card-mapping" style="--clr:110,146,92">
         <div class="prod-icon" style="background:rgba(110,146,92,.15);color:rgb(110,146,92)" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 3 5.5v15L9 18l6 3 6-2.5v-15L15 6z"/><path d="M9 3v15M15 6v15"/></svg></div>
@@ -816,9 +819,12 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
         <div class="prod-icon" style="background:rgba(108,118,180,.15);color:rgb(108,118,180)" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-9.5"/><path d="M12 12.5c0-4 3.2-7.2 7.2-7.2 0 4-3.2 7.2-7.2 7.2z"/><path d="M12 16c0-2.9-2.3-5.2-5.2-5.2 0 2.9 2.3 5.2 5.2 5.2z"/></svg></div>
         <h3 class="prod-name">בקרת תכנית ניצנים</h3>
         <p class="prod-desc">בקרה תקציבית ותפעולית מלאה על תכנית "ניצנים" ברשות המקומית. המערכת מושכת אוטומטית את נתוני התקצוב העדכניים ממית"ר ומצליבה אותם מול דיווחי הביצוע החודשיים, מאתרת פערים וטעויות דיווח, ומפיקה דוחות חלוקה למפעילים ולמוסדות לצד צפי תקציב שנתי — שליטה מלאה בכל שקל של התכנית.</p>
-        <a href="https://nz.tpshk.org.il" class="prod-link" target="_blank" rel="noopener" aria-label="מעבר לתוכנה בקרת תכנית ניצנים בכתובת nz.tpshk.org.il (נפתח בחלון חדש)"><span aria-hidden="true">🌐</span> nz.tpshk.org.il</a>
       </article>
 
+  </div>
+  <div class="prod-enter">
+    <p>כל התוכנות זמינות בכניסה אחת מאובטחת</p>
+    <a href="https://app.tpshk.org.il" class="btn-app" target="_blank" rel="noopener">🔐 כניסה לפלטפורמה <span class="sr-only">(נפתח בחלון חדש)</span></a>
   </div>
 </section>
 

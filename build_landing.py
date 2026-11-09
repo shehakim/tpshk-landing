@@ -30,23 +30,23 @@ def _icon(k):
     return f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">{_SVG[k]}</svg>'
 
 PRODUCTS = [
-    {"id":"hr",        "name":"שליטה מלאה על כוח אדם, תקציב וכלי ניהול במקום אחד", "rgb":"198,160,75",  "live":True, "url":"hr.tpshk.org.il",
+    {"id":"hr",        "name":"שליטה מלאה על כוח אדם, תקציב וכלי ניהול במקום אחד", "rgb":"198,160,75",  "live":True,
      "desc":'מערכת מתקדמת לניהול ובקרת מערך כוח האדם להבטחת התנהלות תקינה, שקופה ויעילה. המודול מספק תמונת מצב מדויקת בזמן אמת, תוך השוואה חכמה ורציפה בין התקן המאושר לבין האיוש בפועל — הן ברמת המוסד, התפקיד וחתך הזמן המבוקש. לצד זאת, המערכת מאפשרת בניית תקציב וניהול פיננסי חכם על בסיס "תקציב אפס", בסנכרון אוטומטי ומלא עם נתוני משרד החינוך העדכניים — לשליטה, שקיפות וביטחון בניהול משאבי האגף.'},
     {"id":"transport", "name":"בקרה ואופטימיזציה של תקציבי הסעות",          "rgb":"70,154,128",  "live":False,
      "desc":'פלטפורמה מקצה-לקצה לניהול מערך ההסעות ברשות: אופטימיזציה אוטומטית של מסלולים, בקרה בזמן אמת ושקיפות מלאה מול הספקים. הכל במקום אחד, בהתאמה לצרכי השלטון המקומי.<br>המערכת חוסכת עלויות, מקצרת זמני נסיעה ומייעלת את כל התהליך — מתכנון המסלול ועד לבקרה השוטפת.'},
-    {"id":"hours",     "name":"מיצוי הכנסות, ניהול תקציב וניהול שעות ההוראה והמנהלה בתיכונים", "rgb":"124,104,168", "live":False, "url":"ay.tpshk.org.il",
+    {"id":"hours",     "name":"מיצוי הכנסות, ניהול תקציב וניהול שעות ההוראה והמנהלה בתיכונים", "rgb":"124,104,168", "live":False,
      "desc":'התוכנה מספקת מענה כולל למוסד ולרשות ומבצעת באופן אוטומטי לחלוטין תקציב למוסד, ניהול מלא ואוטומטי של שעות ההוראה ועובדי המנהלה למול הניצול. השירותים מסופקים לעשרות רבות של מוסדות.'},
-    {"id":"journal",   "name":"פקודת יומן אוטומטית",                       "rgb":"176,138,70",  "live":False, "url":"py.tpshk.org.il",
+    {"id":"journal",   "name":"פקודת יומן אוטומטית",                       "rgb":"176,138,70",  "live":False,
      "desc":'המערכת מבצעת קליטה אוטומטית ומהירה של תקציבי משרדי הממשלה, ודואגת לרישום מדויק וישיר שלהם בספרי התקציב של הרשות — תוך ייעול ומיכון תהליכים לחיסכון בזמן ומניעת טעויות.'},
-    {"id":"fees",      "name":"אגרות חוץ - מענה מקיף",                     "rgb":"176,98,84",   "live":False, "url":"ag.tpshk.org.il",
+    {"id":"fees",      "name":"אגרות חוץ - מענה מקיף",                     "rgb":"176,98,84",   "live":False,
      "desc":'מערך כלים רחב המסייע במיצוי זכויות ומשאבים לרשות הקולטת בשלל תחומים מורכבים: גני ילדים, ליווי בהסעות, שיבוץ סייעות ודירוגי ותק.'},
     {"id":"salary",    "name":"ביקורת שכר אוטומטית (עובדי הוראה)",         "rgb":"150,116,84",  "live":False,
      "desc":'אוטומציה חכמה לניהול ובקרת נתוני שכר בחינוך העל-יסודי. המערכת מבצעת סנכרון והצלבה מדויקת של שכר עובדי הוראה אל מול נתוני משרד החינוך.'},
-    {"id":"security",  "name":"אבטחת מוסדות חינוך",                        "rgb":"168,96,132",  "live":False, "url":"am.tpshk.org.il",
+    {"id":"security",  "name":"אבטחת מוסדות חינוך",                        "rgb":"168,96,132",  "live":False,
      "desc":'בקרה פיננסית ומקסום הכנסות באבטחת מוסדות חינוך, על בסיס הצלבה מלאה בין התקן המאושר, השעות המדווחות והחשבוניות בפועל. המערכת קוראת אוטומטית את קבצי המערכות הארציות, החשבוניות ודוחות הנוכחות, ומעניקה למקבלי ההחלטות איתור מיידי של פערים, השלכה תקציבית בשקלים ושליטה מלאה מול חברות האבטחה.'},
     {"id":"mapping",   "name":"בדיקת מיפוי חינוך מיוחד",                     "rgb":"110,146,92",  "live":False,
      "desc":'בקרה ומיצוי תקציב מלא של מערך החינוך המיוחד ברשות, על בסיס הצלבה אוטומטית בין דוח המשבצת, מצבות התלמידים בגנים ובבתי הספר, קובץ המוכרים והקצאת הסייעות. המערכת מאתרת פערי הקצאה בקודים 160 ו-172, בסייעות הכיתתיות ובימי החופשות בשני המגזרים, ומפיקה קבצים מוכנים להגשה למשרד החינוך.'},
-    {"id":"nitzanim", "name":"בקרת תכנית ניצנים",                          "rgb":"108,118,180", "live":False, "url":"nz.tpshk.org.il",
+    {"id":"nitzanim", "name":"בקרת תכנית ניצנים",                          "rgb":"108,118,180", "live":False,
      "desc":'בקרה תקציבית ותפעולית מלאה על תכנית "ניצנים" ברשות המקומית. המערכת מושכת אוטומטית את נתוני התקצוב העדכניים ממית"ר ומצליבה אותם מול דיווחי הביצוע החודשיים, מאתרת פערים וטעויות דיווח, ומפיקה דוחות חלוקה למפעילים ולמוסדות לצד צפי תקציב שנתי — שליטה מלאה בכל שקל של התכנית.'},
 ]
 for _p in PRODUCTS:
@@ -242,7 +242,7 @@ html[data-a11y-contrast="1"] .cdet-inline,html[data-a11y-contrast="1"] li,
 html[data-a11y-contrast="1"] .modal-box li,html[data-a11y-contrast="1"] label{color:#fff!important}
 html[data-a11y-contrast="1"] a,html[data-a11y-contrast="1"] .nav-links a,
 html[data-a11y-contrast="1"] .prod-link{color:#FFD700!important}
-html[data-a11y-contrast="1"] .btn-navy,html[data-a11y-contrast="1"] .nav-cta,
+html[data-a11y-contrast="1"] .btn-navy,html[data-a11y-contrast="1"] .nav-app,html[data-a11y-contrast="1"] .btn-app,html[data-a11y-contrast="1"] .nav-cta,
 html[data-a11y-contrast="1"] .cf-submit,html[data-a11y-contrast="1"] .btn-gold,
 html[data-a11y-contrast="1"] .a11y-btn{background:#FFD700!important;color:#000!important}
 html[data-a11y-contrast="1"] input,html[data-a11y-contrast="1"] textarea{
@@ -349,6 +349,12 @@ nav{
 .nav-cta:hover{background:var(--navy2);transform:translateY(-1px)}
 .nav-login{border:1.5px solid var(--navy);color:var(--navy);padding:8px 18px;border-radius:8px;font-size:.84rem;font-weight:600;text-decoration:none;transition:all .2s;display:flex;align-items:center;gap:6px}
 .nav-login:hover{background:var(--navy);color:#fff}
+.nav-app{background:linear-gradient(135deg,var(--gold),#B8963A);color:#fff;padding:9px 22px;border-radius:8px;font-size:.84rem;font-weight:700;text-decoration:none;transition:all .2s;display:flex;align-items:center;gap:6px;box-shadow:0 3px 12px rgba(200,169,81,.35)}
+.nav-app:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(200,169,81,.5)}
+.btn-app{background:linear-gradient(135deg,var(--gold),#B8963A);color:#fff;padding:13px 30px;border-radius:9px;font-size:.9rem;font-weight:700;text-decoration:none;box-shadow:0 4px 20px rgba(200,169,81,.35);transition:all .22s}
+.btn-app:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,169,81,.5)}
+.prod-enter{text-align:center;margin-top:38px}
+.prod-enter p{color:var(--muted);font-size:.92rem;margin-bottom:14px}
 
 /* Sun node icon (color set inline per product) */
 .pnode-icon{border-radius:12px;padding:9px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:2px}
@@ -703,8 +709,8 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
   .nav-brand{gap:9px}
   .nav-brand img{height:50px}
   .nav-brand-name{font-size:.86rem}
-  nav>div:last-child{flex-basis:100%;justify-content:center}
-  .nav-login,.nav-cta{padding:8px 15px;font-size:.78rem;white-space:nowrap}
+  nav>div:last-child{flex-basis:100%;justify-content:center;flex-wrap:wrap;row-gap:8px}
+  .nav-login,.nav-cta,.nav-app{padding:8px 15px;font-size:.78rem;white-space:nowrap}
 
   /* hub — keep the FULL sun (orb + rays + nodes), scaled down proportionally */
   .hub-section{flex:0 0 auto;min-height:108vw;max-height:470px;padding:0;position:relative;overflow:hidden}
@@ -737,7 +743,7 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
   .prod-grid{grid-template-columns:1fr}
   /* stacked, full-width CTA buttons */
   .hero-actions{flex-direction:column;align-items:stretch}
-  .btn-navy,.btn-out{text-align:center}
+  .btn-navy,.btn-out,.btn-app{text-align:center}
   footer{justify-content:center;text-align:center}
 }
 </style>
@@ -768,6 +774,7 @@ footer{background:var(--navy2);padding:34px 5%;display:flex;align-items:center;j
   </ul>
   <div style="display:flex;gap:10px;align-items:center">
     <a href="https://tpshk.org.il" class="nav-login" target="_blank" rel="noopener">🌐 מעבר לאתר החברה <span class="sr-only">(נפתח בחלון חדש)</span></a>
+    <a href="https://app.tpshk.org.il" class="nav-app" target="_blank" rel="noopener"><span aria-hidden="true">🔐</span> כניסה לפלטפורמה <span class="sr-only">(נפתח בחלון חדש)</span></a>
     <a href="#contact" class="nav-cta">לקביעת הדגמה חינמית</a>
   </div>
 </nav>
@@ -817,6 +824,7 @@ __NODES__
     <span class="tech-chip">Data-Driven</span>
   </div>
   <div class="hero-actions">
+    <a href="https://app.tpshk.org.il" class="btn-app" target="_blank" rel="noopener">🔐 כניסה לפלטפורמה <span class="sr-only">(נפתח בחלון חדש)</span></a>
     <a href="#products" class="btn-navy">גלה את הפלטפורמה ↓</a>
     <a href="#contact" class="btn-out">קבל הדגמה</a>
   </div>
@@ -832,6 +840,10 @@ __NODES__
   </div>
   <div class="prod-grid">
 __GRID__
+  </div>
+  <div class="prod-enter">
+    <p>כל התוכנות זמינות בכניסה אחת מאובטחת</p>
+    <a href="https://app.tpshk.org.il" class="btn-app" target="_blank" rel="noopener">🔐 כניסה לפלטפורמה <span class="sr-only">(נפתח בחלון חדש)</span></a>
   </div>
 </section>
 
